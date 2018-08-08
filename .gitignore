@@ -13,3 +13,6 @@
 
 # OSX Specific files
 .DS_Store
+
+# css images 
+assets/images/*

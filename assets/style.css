@@ -21,13 +21,13 @@ a:hover {
 
 @media (min-width:768px) {
     .bg {
-        background: url(./bg6test.jpg) center / cover;
+        background: url(./images/bg6test.jpg) center / cover;
     }
 }
 
 @media (max-width:768px) {
     .bg {
-        background: url(./bg6mob.jpeg) center / cover;
+        background: url(./images/bg6mob.jpeg) center / cover;
     }
 }
 
