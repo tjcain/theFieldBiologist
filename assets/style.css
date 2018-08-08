@@ -1,0 +1,90 @@
+.headingf {
+    font-size: 0.8em;
+}
+
+.tfb {
+    letter-spacing: 8px;
+    color: darkgreen
+}
+
+.navbar {
+    margin-bottom: 0;
+}
+
+.navbar-end {
+    padding-right: 10px
+}
+
+a:hover {
+    color: red
+}
+
+@media (min-width:768px) {
+    .bg {
+        background: url(./bg6test.jpg) center / cover;
+    }
+}
+
+@media (max-width:768px) {
+    .bg {
+        background: url(./bg6mob.jpeg) center / cover;
+    }
+}
+
+.margin-top {
+    margin-top: 8vh
+}
+
+.featured-article {
+    height: 300px;
+    background-color: black;
+}
+
+.center {
+    display: flex;
+}
+
+.card-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.text-spacer {
+    padding: 0 2rem;
+}
+
+.spacer-2 {
+    padding: 2rem;
+}
+
+.text-spacer-mobile {
+    padding: 0 0rem;
+}
+
+.font-size {
+    font-size: 0.8em;
+}
+
+.custom-margin {
+    margin: 1rem 3rem 4em 3rem;
+}
+
+.eds-pick-p {
+    font-size: 1rem;
+    border-bottom: 1px solid black;
+    padding: 1rem;
+}
+
+.font-size-1-5 {
+    font-size: 1.5em;
+}
+
+.favorite-icon-padding {
+    padding-left: 10px;
+    padding-top: 1px;
+}
+
+.featured-heading-font {
+    font-size: 1rem;
+    border-bottom: 1px solid black;
+    padding: 1rem;
+}

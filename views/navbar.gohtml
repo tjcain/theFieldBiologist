@@ -1,0 +1,68 @@
+{{define "navbar"}}
+<nav class="navbar is-black heading is-transparent" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+        <div class="navbar-item">
+            <i class="fab fa-envira has-text-primary is-size-5"></i>
+        </div>
+        <a class="navbar-item has-text-weight-bold tfb" href="#">
+            <p>The<span class="has-text-primary">Field</span> Biologist</p>
+        </a>
+
+        <a role="button" class="navbar-burger" aria-label="menu" data-target="navMenu" aria-expanded="false">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
+    <div class="navbar-menu is-black" id="navMenu">
+        <div class="navbar-end">
+            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="#">
+                NEWS
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="#">
+                NEWS
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="#">
+                ABOUT US
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="#">
+                ABOUT US
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="#">
+                CONTACT
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="#">
+                CONTACT
+            </a>
+            <div class="navbar-item has-dropdown is-hoverable is-right">
+                <a class="navbar-link has-text-weight-bold has-text-white is-hidden-touch" href="#">
+                    Content
+                </a>
+                <a class="navbar-link has-text-weight-bold has-text-black is-hidden-desktop" href="#">
+                    Content
+                </a>
+
+                <div class="navbar-dropdown has-text-black is-right">
+                    <a class="navbar-item heading" href="#">
+                        Life In The Field
+                    </a>
+                    <a class="navbar-item heading" href="#">
+                        Tools of The Trade
+                    </a>
+                    <a class="navbar-item heading" href="#">
+                        Conservation
+                    </a>
+                    <a class="navbar-item heading" href="#">
+                        Photography
+                    </a>
+                </div>
+            </div>
+            <a class="navbar-item has-text-weight-bold has-text-primary" href="/login.html">
+                LOGIN | REGISTER
+            </a>
+            </div>
+            </div>
+        </div>
+    </div>
+ </nav>
+{{end}}
