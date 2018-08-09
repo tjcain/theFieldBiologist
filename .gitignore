@@ -14,5 +14,7 @@
 # OSX Specific files
 .DS_Store
 
-# css images 
+# Web design images 
 assets/images/*
+
+.config

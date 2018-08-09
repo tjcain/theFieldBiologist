@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>The Field Biologist</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css">
-    <link rel="stylesheet" href="/assets/style.css">
-    <link rel="shortcut icon" href="static/favicon.ico" type="image/x-icon">
-    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
-</head>
-
-<body>
-    <!-- FULL PAGE HERO -->
+{{define "yield"}}
     <section class="hero is-white is-fullheight bg">
         <div class="card-overlay">
             <div class="hero-head">
@@ -70,14 +56,10 @@
             <div class="column is-10 is-offset-1">
                 <div class="columns has-text-grey has-text-centered-touch">
                     <div class="column">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa vero quae illum alias, provident, nulla, obcaecati consequuntur
-                        expedita impedit quam necessitatibus porro repellendus ipsum. Dicta quam obcaecati repellendus omnis!
-                        Voluptatum.
+                        This site was created to provide a collection of resources for those engaged or interested in scientific field work. Our aim is to inform and inspire the next generation of field researchers, assist and entertain those already in the game and to generally share our own findings about life in the field.
                     </div>
                     <div class="column is-half">
-                        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Ipsa vero quae illum alias, provident, nulla, obcaecati consequuntur
-                        expedita impedit quam necessitatibus porro repellendus ipsum. Dicta quam obcaecati repellendus omnis!
-                        Voluptatum.
+                        If you want to contribute your own article, kit list, gear review or career advice we would love to publish your work. Please read this quick guide to submitting an article to us.
                     </div>
                 </div>
             </div>
@@ -169,12 +151,8 @@
                                     <i class="fas fa-star has-text-warning "></i>
                                     <span class="has-text-black favorite-icon-padding">45</span>
                                 </p>
-
-
-
                                 <a href="# " class="card-footer-item has-text-weight-bold heading has-text-primary ">READ</a>
                                 <a href="# " class="card-footer-item has-text-weight-bold heading has-text-primary ">SHARE</a>
-
                             </footer>
                         </div>
                     </div>
@@ -187,14 +165,5 @@
         </section>
     </article>
     <!-- /FEATURED ARTICLES -->
-
-    <!-- FOOTER -->
-    
-    <!-- /FOOTER -->
-
-
-    <script src="/assets/main.js "></script>
-
-</body>
-
-</html>
+    {{template "footer"}}
+{{end}}

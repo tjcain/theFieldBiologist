@@ -1,0 +1,55 @@
+{{ define "yield" }}
+<section class="section has-text-centered">
+        <div class="column content is-4 is-offset-4 has-text-grey-light">
+            <h1 class="has-text-grey-dark">Sign Up</h1>
+            <p>Fill In the details below to join the discussion...</p>
+        </div>
+        <form action="">
+            <div class=" column box is-6 is-offset-3">
+                <div class="field">
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input is-medium" type="text" id="name" name="name" placeholder="Your Name">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-user"></i>
+                        </span>
+
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input is-medium" type="email" id="email" name="email" placeholder="Your Email">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="field">
+                    <p class="control has-icons-left">
+                        <input class="input is-medium" type="password" id="password" name="password" placeholder="Your Password">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="field has-text-weight-light heading has-text-left">
+                    <label class="checkbox">
+                        <input id="tandc" type="checkbox"> I agree to the
+                        <a href="#">terms and conditions</a>
+                    </label>
+                </div>
+                <div class="field has-text-weight-light heading has-text-left">
+                    <label class="checkbox">
+                        <input type='checkbox'> Check this box if you don't mind us occasionally informing you of news and updates via email.
+                    </label>
+                </div>
+                <button type="submit" id="button" class="button is-block is-medium is-primary is-fullwidth">Sign Up
+                </button>
+            </div>
+        </form>
+        <div class=" column content heading is-4 is-offset-4 ">
+            <a class="has-text-grey has-text-weight-bold" href="/login">Log In</a> &nbsp;|&nbsp;
+            <a class="has-text-grey has-text-weight-bold" href="#">Forgot Password</a>&nbsp;|&nbsp;
+            <a class="has-text-grey has-text-weight-bold" href="#">Need Help?</a>
+        </div>
+    </section>
+{{ end }}
