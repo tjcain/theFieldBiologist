@@ -11,6 +11,8 @@ const (
 	LayoutDir string = "views/layouts/"
 	// TemplateExt is the extension of template files used during globbing.
 	TemplateExt string = ".gohtml"
+	// TemplateDir is the root directory for all template files.
+	TemplateDir string = "views/"
 )
 
 // View ...comment
@@ -23,6 +25,8 @@ type View struct {
 // to the list of files appended, parse those template files and return a new
 // *View.
 func NewView(layout string, files ...string) *View {
+	addTemplatePath(files)
+	addTemplateExt(files)
 	files = append(files, layoutFiles()...)
 	t, err := template.ParseFiles(files...)
 	if err != nil {
@@ -35,8 +39,16 @@ func NewView(layout string, files ...string) *View {
 	}
 }
 
+// ServeHTTP impliments the Handler interface
+func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if err := v.Render(w, nil); err != nil {
+		panic(err)
+	}
+}
+
 // Render is responsible for rendering the view called by the HandlerFuncs
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
+	w.Header().Set("Content-Type", "text/html")
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
 
@@ -48,4 +60,18 @@ func layoutFiles() []string {
 		panic(err)
 	}
 	return files
+}
+
+// addTemplatePath prepends the TemplateDir to each string in the provided slice
+func addTemplatePath(files []string) {
+	for i, f := range files {
+		files[i] = TemplateDir + f
+	}
+}
+
+// addTemplateExt appends the TemplateExt to each string in the provided slice
+func addTemplateExt(files []string) {
+	for i, f := range files {
+		files[i] = f + TemplateExt
+	}
 }

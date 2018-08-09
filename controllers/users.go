@@ -16,7 +16,7 @@ type Users struct {
 // Any error in rendering templates will cause this function to panic.
 func NewUsers() *Users {
 	return &Users{
-		NewView: views.NewView("pages", "views/users/signup.gohtml"),
+		NewView: views.NewView("pages", "users/signup"),
 	}
 }
 
