@@ -17,4 +17,8 @@
 # Web design images 
 assets/images/*
 
+# top secret config
 .config
+
+# experimental
+exp/  

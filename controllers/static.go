@@ -11,6 +11,7 @@ type Static struct {
 	// News
 }
 
+// NewStatic returns a static controller
 func NewStatic() *Static {
 	return &Static{
 		HomeView:  views.NewView("homePage", "static/home"),
