@@ -28,12 +28,12 @@ type LogInForm struct {
 type Users struct {
 	NewView   *views.View
 	LogInView *views.View
-	us        *models.UserService
+	us        models.UserService
 }
 
 // NewUsers is used to create a new Users controller.
 // Any error in rendering templates will cause this function to panic.
-func NewUsers(us *models.UserService) *Users {
+func NewUsers(us models.UserService) *Users {
 	return &Users{
 		NewView:   views.NewView("pages", "users/signup"),
 		LogInView: views.NewView("pages", "users/login"),

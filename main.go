@@ -6,6 +6,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
+	"github.com/tjcain/theFieldBiologist/devhelpers"
 	"github.com/tjcain/theFieldBiologist/models"
 )
 
@@ -51,8 +52,11 @@ func main() {
 	// cookietest is for dev only..
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
 
-	fmt.Println("Starting server on port 3000")
-	http.ListenAndServe(":3000", r)
+	// use to find local network
+	// ifconfig | grep netmask
+	fmt.Println("Listening on localhost:8080")
+	fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
+	http.ListenAndServe(":8080", r)
 
 }
 
