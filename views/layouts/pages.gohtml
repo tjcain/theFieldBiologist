@@ -13,8 +13,11 @@
 </head>
 
 <body >
-    {{ template "navbar" .}}
-    {{ template "yield" .}}
+    {{ template "navbar" . }}
+    {{ if .Alert }}
+        {{ template "alert" .Alert }}
+    {{ end }}
+    {{ template "yield" . }}
 
 
     <script src="/assets/main.js "></script>

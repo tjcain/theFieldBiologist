@@ -49,6 +49,14 @@ func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // Render is responsible for rendering the view called by the HandlerFuncs
 func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 	w.Header().Set("Content-Type", "text/html")
+	switch data.(type) {
+	case Data:
+		// do nothing
+	default:
+		data = Data{
+			Yield: data,
+		}
+	}
 	return v.Template.ExecuteTemplate(w, v.Layout, data)
 }
 
