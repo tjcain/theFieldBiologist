@@ -2,6 +2,8 @@ package models
 
 import (
 	"errors"
+	"regexp"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -22,6 +24,15 @@ var (
 	// ErrInvalidPassword is returned when a user attemptes to log in using an
 	// incorrect password and cannot be authenticated
 	ErrInvalidPassword = errors.New("models: incorrect password provided")
+	// ErrEmailRequired is returned when an email address field is empty when
+	// attempting to create a user
+	ErrEmailRequired = errors.New("models: email address required")
+	// ErrEmailInvalid is returned when a provided email address
+	// does not pass validation
+	ErrEmailInvalid = errors.New("models: email address is invalid")
+	// ErrEmailTaken is returned when an update or create call is attempted
+	// on an email address that is already in the database.
+	ErrEmailTaken = errors.New("models: email address is already taken")
 )
 
 var userPwPepper = "top-secret-pepper"
@@ -77,6 +88,7 @@ type User struct {
 	RememberMe   bool   `gorm:"-"`
 }
 
+// TODO: Delete before deployment
 var _ UserService = &userService{}
 
 // UserService provides an abstraction layer, and provides methods for
@@ -92,10 +104,7 @@ func NewUserService(connectionInfo string) (UserService, error) {
 		return nil, err
 	}
 	hmac := hash.NewHMAC(hmacSecretKey)
-	uv := &userValidator{
-		UserDB: ug,
-		hmac:   hmac,
-	}
+	uv := newUserValidator(ug, hmac)
 	return &userService{
 		UserDB: uv,
 	}, nil
@@ -236,17 +245,43 @@ func (ug *userGorm) Close() error {
 	return ug.db.Close()
 }
 
+type userValFunc func(*User) error
+
+func runUserValFns(user *User, fns ...userValFunc) error {
+	for _, fn := range fns {
+		if err := fn(user); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // userValidator is our validation layer that validates
 // and normalizes data before passing it on to the next
 // UserDB in our interface chain.
 type userValidator struct {
 	UserDB
-	hmac hash.HMAC
+	hmac       hash.HMAC
+	emailRegex *regexp.Regexp
 }
 
-// Create will create the provided user and backfill data
-// like the ID, CreatedAt, and UpdatedAt fields.
-func (uv *userValidator) Create(user *User) error {
+func newUserValidator(udb UserDB,
+	hmac hash.HMAC) *userValidator {
+	return &userValidator{
+		UserDB:     udb,
+		hmac:       hmac,
+		emailRegex: regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,16}$`),
+	}
+}
+
+// VALIDATION FUNCS
+
+// bcryptPassword hashes user.Password using the bcypt package. It also will
+// concatinate an app-wide pepper.  Salting is provided by bcrypt automatically
+func (uv *userValidator) bcryptPassword(user *User) error {
+	if user.Password == "" {
+		return nil
+	}
 	pwBytes := []byte(user.Password + userPwPepper)
 	hashedBytes, err := bcrypt.GenerateFromPassword(pwBytes,
 		bcrypt.DefaultCost)
@@ -255,21 +290,107 @@ func (uv *userValidator) Create(user *User) error {
 	}
 	user.PasswordHash = string(hashedBytes)
 	user.Password = ""
+	return nil
+}
 
+func (uv *userValidator) hmacRemember(user *User) error {
 	if user.Remember == "" {
-		token, err := rand.RememberToken()
-		if err != nil {
-			return err
-		}
-		user.Remember = token
+		return nil
 	}
+	user.RememberHash = uv.hmac.Hash(user.Remember)
+	return nil
+}
+
+func (uv *userValidator) setRememberIfUnset(user *User) error {
+	if user.Remember != "" {
+		return nil
+	}
+	token, err := rand.RememberToken()
+	if err != nil {
+		return err
+	}
+	user.Remember = token
+	return nil
+}
+
+func (uv *userValidator) idGreaterThan(n uint) userValFunc {
+	return userValFunc(func(user *User) error {
+		if user.ID <= n {
+			return ErrInvalidID
+		}
+		return nil
+	})
+}
+
+func (uv *userValidator) normalizeEmail(user *User) error {
+	user.Email = strings.ToLower(user.Email)
+	user.Email = strings.TrimSpace(user.Email)
+	return nil
+}
+
+func (uv *userValidator) requireEmail(user *User) error {
+	if user.Email == "" {
+		return ErrEmailRequired
+	}
+	return nil
+}
+
+func (uv *userValidator) emailFormat(user *User) error {
+	if user.Email == "" {
+		return nil
+	}
+	if !uv.emailRegex.MatchString(user.Email) {
+		return ErrEmailInvalid
+	}
+	return nil
+}
+
+func (uv *userValidator) emailExistsCheck(user *User) error {
+	existing, err := uv.ByEmail(user.Email)
+	if err == ErrNotFound {
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+	if user.ID != existing.ID {
+		return ErrEmailTaken
+	}
+	return nil
+}
+
+// CRUD FUNCS
+
+// Create will create the provided user and backfill data
+// like the ID, CreatedAt, and UpdatedAt fields.
+func (uv *userValidator) Create(user *User) error {
+	err := runUserValFns(user,
+		uv.bcryptPassword,
+		// must come before hmacRemember
+		uv.setRememberIfUnset,
+		uv.hmacRemember,
+		uv.requireEmail,
+		uv.normalizeEmail,
+		uv.emailFormat,
+		uv.emailExistsCheck)
+	if err != nil {
+		return err
+	}
+
 	user.RememberHash = uv.hmac.Hash(user.Remember)
 	return uv.UserDB.Create(user)
 }
 
 func (uv *userValidator) Update(user *User) error {
-	if user.Remember != "" {
-		user.RememberHash = uv.hmac.Hash(user.Remember)
+	err := runUserValFns(user,
+		uv.bcryptPassword,
+		uv.hmacRemember,
+		uv.requireEmail,
+		uv.normalizeEmail,
+		uv.emailFormat,
+		uv.emailExistsCheck)
+	if err != nil {
+		return err
 	}
 	return uv.UserDB.Update(user)
 }
@@ -277,8 +398,10 @@ func (uv *userValidator) Update(user *User) error {
 // Delete will delete the user with the provided ID, validating that there
 // is no id of 0, which would delete the entire database...
 func (uv *userValidator) Delete(id uint) error {
-	if id == 0 {
-		return ErrInvalidID
+	var user User
+	err := runUserValFns(&user, uv.idGreaterThan(0))
+	if err != nil {
+		return err
 	}
 	return uv.UserDB.Delete(id)
 }
@@ -286,8 +409,26 @@ func (uv *userValidator) Delete(id uint) error {
 // ByRemember will hash the remember token and then call ug.ByRemember on the
 // subusiquent UserDB layer
 func (uv *userValidator) ByRemember(token string) (*User, error) {
-	rememberHash := uv.hmac.Hash(token)
-	return uv.UserDB.ByRemember(rememberHash)
+	user := User{
+		Remember: token,
+	}
+	if err := runUserValFns(&user, uv.hmacRemember); err != nil {
+		return nil, err
+	}
+	return uv.UserDB.ByRemember(user.RememberHash)
+}
+
+// ByEmail will normalize an email address before passing
+// it on to the database layer to perform the query.
+func (uv *userValidator) ByEmail(email string) (*User, error) {
+	user := User{
+		Email: email,
+	}
+	err := runUserValFns(&user, uv.normalizeEmail)
+	if err != nil {
+		return nil, err
+	}
+	return uv.UserDB.ByEmail(user.Email)
 }
 
 // first will query using the provided gorm.DB. It will return the first item
