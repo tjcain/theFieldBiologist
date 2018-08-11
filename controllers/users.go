@@ -112,7 +112,7 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		case models.ErrNotFound:
 			fmt.Fprintln(w, "Invalid email address")
 			return
-		case models.ErrInvalidPassword:
+		case models.ErrPasswordInvalid:
 			fmt.Fprintln(w, "Invalid password")
 			return
 		default:
