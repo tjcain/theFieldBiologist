@@ -27,9 +27,9 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// TODO: simplify this:
-	defer services.User.Close()
-	services.User.AutoMigrate()
+
+	defer services.Close()
+	services.AutoMigrate()
 
 	r := mux.NewRouter()
 	// Static Assets
@@ -40,6 +40,7 @@ func main() {
 	// controllers
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
+	articlesC := controllers.NewArticles(services.Article)
 
 	// handlers
 	r.Handle("/", staticC.HomeView).Methods("GET")
@@ -52,6 +53,9 @@ func main() {
 	r.HandleFunc("/login", usersC.LogIn).Methods("POST")
 	// cookietest is for dev only..
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
+
+	// articles
+	r.Handle("/articles/new", articlesC.NewArticle).Methods("GET")
 
 	// use to find local network
 	// ifconfig | grep netmask

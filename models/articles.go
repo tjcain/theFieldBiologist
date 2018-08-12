@@ -20,11 +20,31 @@ type ArticleDB interface {
 	Create(article *Article) error
 }
 
+type articleService struct {
+	ArticleDB
+}
+
+// NewArticleService ...
+func NewArticleService(db *gorm.DB) ArticleService {
+	return &articleService{
+		ArticleDB: &articleValidator{
+			ArticleDB: &articleGorm{
+				db: db,
+			},
+		},
+	}
+}
+
+type articleValidator struct {
+	ArticleDB
+}
+
+var _ ArticleDB = &articleGorm{}
+
 type articleGorm struct {
 	db *gorm.DB
 }
 
-func (gg *articleGorm) Create(article *Article) error {
-	// TODO: Impliment this
-	return nil
+func (ag *articleGorm) Create(article *Article) error {
+	return ag.db.Create(article).Error
 }

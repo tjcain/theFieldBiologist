@@ -6,6 +6,7 @@ import "github.com/jinzhu/gorm"
 type Services struct {
 	Article ArticleService
 	User    UserService
+	db      *gorm.DB
 }
 
 // NewServices opens a database conection, checks for errors, sets db log mode
@@ -18,6 +19,28 @@ func NewServices(connectionInfo string) (*Services, error) {
 	db.LogMode(true)
 	return &Services{
 		User:    NewUserService(db),
-		Article: &articleGorm{},
+		Article: NewArticleService(db),
+		db:      db,
 	}, nil
+}
+
+// DestructiveReset drops the user table and rebuilts it
+func (s *Services) DestructiveReset() error {
+	if err := s.db.DropTableIfExists(&User{}, Article{}).Error; err != nil {
+		return err
+	}
+	return s.AutoMigrate()
+}
+
+// AutoMigrate will attempt to automatically migrate the users table
+func (s *Services) AutoMigrate() error {
+	if err := s.db.AutoMigrate(&User{}, Article{}).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+// Close closes the UserService database connection
+func (s *Services) Close() error {
+	return s.db.Close()
 }

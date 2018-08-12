@@ -34,12 +34,6 @@ type UserDB interface {
 	Create(user *User) error
 	Update(user *User) error
 	Delete(id uint) error
-
-	// Helpers
-	AutoMigrate() error
-	DestructiveReset() error
-
-	Close() error
 }
 
 // UserService is a set of methods used to manipulate and
@@ -184,27 +178,6 @@ func (ug *userGorm) ByRemember(rememberHash string) (*User, error) {
 		return nil, err
 	}
 	return &user, nil
-}
-
-// DestructiveReset drops the user table and rebuilts it
-func (ug *userGorm) DestructiveReset() error {
-	if err := ug.db.DropTableIfExists(&User{}).Error; err != nil {
-		return err
-	}
-	return ug.AutoMigrate()
-}
-
-// AutoMigrate will attempt to automatically migrate the users table
-func (ug *userGorm) AutoMigrate() error {
-	if err := ug.db.AutoMigrate(&User{}).Error; err != nil {
-		return err
-	}
-	return nil
-}
-
-// Close closes the UserService database connection
-func (ug *userGorm) Close() error {
-	return ug.db.Close()
 }
 
 type userValFunc func(*User) error
