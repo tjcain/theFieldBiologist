@@ -1,7 +1,10 @@
 package views
 
 import (
+	"bytes"
 	"html/template"
+	"io"
+	"log"
 	"net/http"
 	"path/filepath"
 )
@@ -41,13 +44,11 @@ func NewView(layout string, files ...string) *View {
 
 // ServeHTTP impliments the Handler interface
 func (v *View) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if err := v.Render(w, nil); err != nil {
-		panic(err)
-	}
+	v.Render(w, nil)
 }
 
 // Render is responsible for rendering the view called by the HandlerFuncs
-func (v *View) Render(w http.ResponseWriter, data interface{}) error {
+func (v *View) Render(w http.ResponseWriter, data interface{}) {
 	w.Header().Set("Content-Type", "text/html")
 	switch data.(type) {
 	case Data:
@@ -57,7 +58,15 @@ func (v *View) Render(w http.ResponseWriter, data interface{}) error {
 			Yield: data,
 		}
 	}
-	return v.Template.ExecuteTemplate(w, v.Layout, data)
+	var buf bytes.Buffer
+	err := v.Template.ExecuteTemplate(&buf, v.Layout, data)
+	if err != nil {
+		log.Println("RENDER:", err)
+		http.Error(w, "Oops! Something went wrong. If the problem persists "+
+			"contact us.", http.StatusInternalServerError)
+		return
+	}
+	io.Copy(w, &buf)
 }
 
 // other functions:

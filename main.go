@@ -23,12 +23,13 @@ func main() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s dbname =%s "+
 		"sslmode=disable", host, port, user, dbName)
 	// Create a UserService
-	us, err := models.NewUserService(psqlInfo)
+	services, err := models.NewServices(psqlInfo)
 	if err != nil {
 		panic(err)
 	}
-	defer us.Close()
-	us.AutoMigrate()
+	// TODO: simplify this:
+	defer services.User.Close()
+	services.User.AutoMigrate()
 
 	r := mux.NewRouter()
 	// Static Assets
@@ -38,7 +39,7 @@ func main() {
 
 	// controllers
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers(us)
+	usersC := controllers.NewUsers(services.User)
 
 	// handlers
 	r.Handle("/", staticC.HomeView).Methods("GET")

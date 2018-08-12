@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"regexp"
 	"strings"
 
@@ -15,41 +14,7 @@ import (
 )
 
 const hmacSecretKey = "secret-hmac-key"
-
-var (
-	// ErrNotFound is returned when a resource cannot be found
-	ErrNotFound = errors.New("models: resource not found")
-	// ErrIDInvalid is returned when an invalid ID is provied to a method
-	ErrIDInvalid = errors.New("models: ID provided was invalid")
-	// ErrPasswordInvalid is returned when a user attemptes to log in using an
-	// incorrect password and cannot be authenticated
-	ErrPasswordInvalid = errors.New("models: incorrect password provided")
-	// ErrEmailRequired is returned when an email address field is empty when
-	// attempting to create a user
-	ErrEmailRequired = errors.New("models: email address required")
-	// ErrEmailInvalid is returned when a provided email address
-	// does not pass validation
-	ErrEmailInvalid = errors.New("models: email address is invalid")
-	// ErrEmailTaken is returned when an update or create call is attempted
-	// on an email address that is already in the database.
-	ErrEmailTaken = errors.New("models: email address is already taken")
-	// ErrPasswordTooShort is returned with a user attempts to set a password
-	// that is less than 8 characters
-	ErrPasswordTooShort = errors.New("models: password must be at least 8" +
-		" characters long")
-	// ErrPasswordRequired is returned when a create is attempted with a null
-	// password field.
-	ErrPasswordRequired = errors.New("models: password is required")
-	// ErrRememberRequired is returned when a create or update is attempted
-	// without a user remember token hash
-	ErrRememberRequired = errors.New("models: remember token is required")
-	// ErrRememberTooShort is retunred when a remember token generated is less
-	// than 32 bytes
-	ErrRememberTooShort = errors.New("models: remember token must be atleast" +
-		" 32 bytes")
-)
-
-var userPwPepper = "top-secret-pepper"
+const userPwPepper = "top-secret-pepper"
 
 // UserDB is used to interact with the users database.
 //
@@ -112,16 +77,13 @@ type userService struct {
 }
 
 // NewUserService instantiates a UserService with a connection to postgres db
-func NewUserService(connectionInfo string) (UserService, error) {
-	ug, err := newUserGorm(connectionInfo)
-	if err != nil {
-		return nil, err
-	}
+func NewUserService(db *gorm.DB) UserService {
+	ug := &userGorm{db}
 	hmac := hash.NewHMAC(hmacSecretKey)
 	uv := newUserValidator(ug, hmac)
 	return &userService{
 		UserDB: uv,
-	}, nil
+	}
 }
 
 // Authenticate is used to authenticate a user with the provided email and
@@ -154,21 +116,7 @@ var _ UserDB = &userGorm{}
 // userGorm represents the database interaction layer and impliments the UserDB
 // interface fully.
 type userGorm struct {
-	db   *gorm.DB
-	hmac hash.HMAC
-}
-
-func newUserGorm(connectionInfo string) (*userGorm, error) {
-	db, err := gorm.Open("postgres", connectionInfo)
-	if err != nil {
-		return nil, err
-	}
-	db.LogMode(true)
-	hmac := hash.NewHMAC(hmacSecretKey)
-	return &userGorm{
-		db:   db,
-		hmac: hmac,
-	}, nil
+	db *gorm.DB
 }
 
 // Create will create the provided user. Create expects a pre-validated user
