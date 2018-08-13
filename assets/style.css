@@ -100,3 +100,21 @@ a:hover {
 .margin-top-2 {
     margin-top: 2rem;
 }
+
+/* QUILL OUTPUT MODIFIERS */
+
+.ql-align-center {
+    text-align: center
+}
+
+.ql-align-right {
+    text-align: right
+}
+
+.ql-align-justify {
+    text-align: justify
+}
+
+.ql-editor {
+    height: 60vh !important;
+}

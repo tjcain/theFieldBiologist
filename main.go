@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
 	"github.com/tjcain/theFieldBiologist/devhelpers"
+	"github.com/tjcain/theFieldBiologist/middleware"
 	"github.com/tjcain/theFieldBiologist/models"
 )
 
@@ -40,7 +41,15 @@ func main() {
 	// controllers
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
-	articlesC := controllers.NewArticles(services.Article)
+	articlesC := controllers.NewArticles(services.Article, r)
+
+	// middleware
+	requireUserMw := middleware.RequireUser{
+		UserService: services.User,
+	}
+
+	// newArticle := requireUserMw.Apply(articlesC.NewArticle)
+	// createArticle := requireUserMw.ApplyFn(articlesC.Create)
 
 	// handlers
 	r.Handle("/", staticC.HomeView).Methods("GET")
@@ -51,12 +60,23 @@ func main() {
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	r.Handle("/login", usersC.LogInView).Methods("GET")
 	r.HandleFunc("/login", usersC.LogIn).Methods("POST")
+
 	// cookietest is for dev only..
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
 
 	// articles
-	r.Handle("/articles/new", articlesC.NewArticle).Methods("GET")
-
+	r.Handle("/articles/new",
+		requireUserMw.Apply(articlesC.NewArticle)).Methods("GET")
+	r.HandleFunc("/articles",
+		requireUserMw.ApplyFn(articlesC.Create)).Methods("POST")
+	r.HandleFunc("/articles/{id:[0-9]+}",
+		articlesC.Show).Methods("GET").Name(controllers.ShowArticle)
+	r.HandleFunc("/articles/{id:[0-9]+}/edit",
+		requireUserMw.ApplyFn(articlesC.Edit)).Methods("GET")
+	r.HandleFunc("/articles/{id:[0-9]+}/update",
+		requireUserMw.ApplyFn(articlesC.Update)).Methods("POST")
+	r.HandleFunc("/articles/{id:[0-9]+}/delete",
+		requireUserMw.ApplyFn(articlesC.Delete)).Methods("POST")
 	// use to find local network
 	// ifconfig | grep netmask
 	fmt.Println("Listening on localhost:8080")

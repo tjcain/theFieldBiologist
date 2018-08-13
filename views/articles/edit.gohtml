@@ -1,0 +1,62 @@
+{{define "yield"}}
+    {{template "editform" .Yield}}
+{{end}}
+
+
+{{define "editform"}}
+ <section class="section">
+        <form action="/articles/{{.ID}}/update" id="wysiwygform" method="POST">
+            <div class=" column card is-12">
+                <div class="field">
+                    <label for="title" class="label">Title</label>
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input is-medium" 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        placeholder="Title of Article"
+                        value="{{.Title}}">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-pencil-alt"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="field">
+                    <input type="hidden" name="body">
+                    <div id="editor-container">
+                    {{.BodyHTML}}
+                    </div>
+                </div>
+                <!-- BUTTONS -->
+                <div class="columns">
+                    <div class="column is-two-thirds">
+                        <button type='submit' 
+                        id="button" 
+                        class="button is-block is-medium is-info is-fullwidth">
+                        Save
+                        </button>
+                    </div>
+
+                  <!--   <div class="column">
+                        <button type='submit' id="button" class="button is-block is-medium is-success is-fullwidth">Publish
+                    </div> -->
+                </div>
+                </button>
+            </div>
+        </form>
+        <div class="column">
+        <form action="/articles/{{.ID}}/delete" method="POST">
+            <button action="submit"
+            id="button" 
+            class="button is-block is-medium is-danger is-fullwidth">
+            Delete
+            </button>
+            </form>
+                    </div>
+    </section>
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="/assets/quill.js"></script>
+
+{{end}}

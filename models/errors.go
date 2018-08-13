@@ -26,6 +26,9 @@ const (
 	// ErrPasswordRequired is returned when a create is attempted with a null
 	// password field.
 	ErrPasswordRequired modelError = "models: password is required"
+	// ErrTitleRequired is returned when an attempt to create an asset is made
+	// without a title
+	ErrTitleRequired modelError = "models: title is required"
 
 	//PRIVATE ERRORS - not displayed to end user
 
@@ -38,6 +41,9 @@ const (
 	// than 32 bytes
 	ErrRememberTooShort privateError = "models: remember token must be atleast" +
 		" 32 bytes"
+	// ErrUserIDRequired is returned when a user id is not provided during the
+	// creation of an article or other user linked asset
+	ErrUserIDRequired privateError = "models: user ID is required"
 )
 
 type modelError string
