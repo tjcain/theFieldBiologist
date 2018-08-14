@@ -32,6 +32,9 @@ type UserDB interface {
 	Create(user *User) error
 	Update(user *User) error
 	Delete(id uint) error
+
+	// Methods for getting users articles
+	ArticlesByUser(user *User) ([]Article, error)
 }
 
 // UserService is a set of methods used to manipulate and
@@ -177,6 +180,16 @@ func (ug *userGorm) ByRemember(rememberHash string) (*User, error) {
 		return nil, err
 	}
 	return &user, nil
+}
+
+// ArticlesByUser returns all articles linked to the provided user
+func (ug *userGorm) ArticlesByUser(user *User) ([]Article, error) {
+	var articles []Article
+	err := ug.db.Model(&user).Related(&articles).Error
+	if err != nil {
+		return nil, err
+	}
+	return articles, nil
 }
 
 type userValFunc func(*User) error

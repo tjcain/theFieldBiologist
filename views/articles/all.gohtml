@@ -1,15 +1,6 @@
 {{ define "yield" }}
     <section class="section">
-        <h1 class="title">Hi NameToGoHere, Ready to Write?</h1>
-        <h2 class="subtitle">Manage, Create, Edit</h2>
-        <div class="column">
-            <a href="/article/new" class="button is-primary is-medium">
-                <span class="icon">
-                    <i class="fas fa-plus"> </i>
-                </span>
-                <span>Create Article</span>
-            </a>
-        </div>
+        <h1 class="title">Articles</h1>
         {{ range .Yield}}
         <div class="column">
             <div class="card">
@@ -19,28 +10,15 @@
                             <p class="title is-4">
                                 {{.Title}}
                             </p>
+                            <p class="subtitle is-6">
+                                {{.Name}}
+                            </p>
                         </div>
-                        <div class="column auto">
-                            
-                                <a href="/article/{{.ID}}" class="button is-primary is-outlined">
-                                    <span class="icon">
-                                        <i class="far fa-eye"></i>
-                                    </span>
-                                </a>
-                                <a href="/article/{{.ID}}/edit" class="button is-info is-outlined">
-                                    <span class="icon">
-                                        <i class="far fa-edit"></i>
-                                    </span>
-                                </a>
-                                <form class="is-marginless is-paddingless is-inline" action="/article/{{.ID}}/delete" method="POST">
-                                    <button action="submit" class="button is-danger is-outlined">
-                                        <span class="icon">
-                                            <i class="far fa-trash-alt"></i>
-                                        </span>
-                                    </button>
-                                </form>
-                              
-                        </div>
+                    </div>
+                    <div class="content">
+                    <!-- need to generate a snippet... based on <p> tagsx
+                    {{.BodyHTML}} -->
+                    
                     </div>
 
                 </div>
@@ -57,8 +35,8 @@
                     </p>
                     <p class="card-footer-item">
                         <span>
-                            <a href="" class="button is-link is-outlined">
-                                Submit for review
+                            <a href="/article/{{.ID}}">
+                                Read
                             </a>
                         </span>
                     </p>

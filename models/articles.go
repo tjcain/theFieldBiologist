@@ -33,6 +33,7 @@ type ArticleService interface {
 type ArticleDB interface {
 	ByID(id uint) (*Article, error)
 	ByUserID(userID uint) ([]Article, error)
+	GetAll() ([]Article, error)
 	Create(article *Article) error
 	Update(article *Article) error
 	Delete(id uint) error
@@ -145,6 +146,16 @@ func (ag *articleGorm) ByUserID(userID uint) ([]Article, error) {
 	db := ag.db.Table("articles").Select("articles.*, users.name").
 		Joins("join users on articles.user_id = users.id").
 		Where("user_id = ?", userID)
+	if err := db.Find(&articles).Error; err != nil {
+		return nil, err
+	}
+	return articles, nil
+}
+
+func (ag *articleGorm) GetAll() ([]Article, error) {
+	var articles []Article
+	db := ag.db.Table("articles").Select("articles.*, users.name").
+		Joins("join users on articles.user_id = users.id")
 	if err := db.Find(&articles).Error; err != nil {
 		return nil, err
 	}

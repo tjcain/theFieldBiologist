@@ -143,14 +143,19 @@ func (a *Articles) Show(w http.ResponseWriter, r *http.Request) {
 	a.ShowFullArticle.Render(w, vd)
 }
 
-// ShowAllArticles GET /articles/:id
-func (a *Articles) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
-	user := context.User(r.Context())
-	articles, err := a.as.ByUserID(user.ID)
+// ShowLatestArticles GET /articles
+func (a *Articles) ShowLatestArticles(w http.ResponseWriter, r *http.Request) {
+	articles, err := a.as.GetAll()
 	if err != nil {
 		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
 		return
 	}
+
+	// TODO: think of a better way to do this:
+	for i, article := range articles {
+		articles[i].BodyHTML = template.HTML(article.Body)
+	}
+
 	var vd views.Data
 	vd.Yield = articles
 	a.AllArticles.Render(w, vd)

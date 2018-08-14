@@ -27,18 +27,20 @@ type LogInForm struct {
 
 // Users represents a new user view
 type Users struct {
-	NewView   *views.View
-	LogInView *views.View
-	us        models.UserService
+	NewView         *views.View
+	LogInView       *views.View
+	AllArticlesView *views.View
+	us              models.UserService
 }
 
 // NewUsers is used to create a new Users controller.
 // Any error in rendering templates will cause this function to panic.
 func NewUsers(us models.UserService) *Users {
 	return &Users{
-		NewView:   views.NewView("pages", "users/signup"),
-		LogInView: views.NewView("pages", "users/login"),
-		us:        us,
+		NewView:         views.NewView("pages", "users/signup"),
+		LogInView:       views.NewView("pages", "users/login"),
+		AllArticlesView: views.NewView("pages", "users/allarticles"),
+		us:              us,
 	}
 }
 
@@ -131,6 +133,32 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/articles", http.StatusFound)
+}
+
+// ShowAllArticles lists all the articles belonging to a given author, this is
+// only visible to a logged in author as it provides edit / delete capability
+func (u *Users) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("remember_token")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	user, err := u.us.ByRemember(cookie.Value)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	var vd views.Data
+	fmt.Println(user)
+	articles, err := u.us.ArticlesByUser(user)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	vd.User = user
+	vd.Yield = articles
+	u.AllArticlesView.Render(w, vd)
+
 }
 
 // CookieTest is a temporary function for development only. It will display

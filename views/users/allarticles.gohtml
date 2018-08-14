@@ -1,0 +1,69 @@
+{{ define "yield" }}
+    <section class="section">
+        <h1 class="title">Hi {{.User.Name}}, Ready to Write?</h1>
+        <h2 class="subtitle">Manage, Create, Edit</h2>
+        <div class="column">
+            <a href="/article/new" class="button is-primary is-medium">
+                <span class="icon">
+                    <i class="fas fa-plus"> </i>
+                </span>
+                <span>Create Article</span>
+            </a>
+        </div>
+        {{ range .Yield}}
+        <div class="column">
+            <div class="card">
+                <div class="card-content">
+                    <div class="columns">
+                        <div class="column is-three-quarters">
+                            <p class="title is-4">
+                                {{.Title}}
+                            </p>
+                        </div>
+                        <div class="column auto">
+                                <a href="/article/{{.ID}}" class="button is-primary is-outlined">
+                                    <span class="icon">
+                                        <i class="far fa-eye"></i>
+                                    </span>
+                                </a>
+                                <a href="/article/{{.ID}}/edit" class="button is-info is-outlined">
+                                    <span class="icon">
+                                        <i class="far fa-edit"></i>
+                                    </span>
+                                </a>
+                                <form class="is-marginless is-paddingless is-inline" action="/article/{{.ID}}/delete" method="POST">
+                                    <button action="submit" class="button is-danger is-outlined">
+                                        <span class="icon">
+                                            <i class="far fa-trash-alt"></i>
+                                        </span>
+                                    </button>
+                                </form>
+                        </div>
+                    </div>
+
+                </div>
+                <footer class="card-footer">
+                    <p class="card-footer-item">
+                        <span>
+                            Views: COMMING SOON
+                        </span>
+                    </p>
+                    <p class="card-footer-item">
+                        <span>
+                            Favorites: COMMING SOON
+                        </span>
+                    </p>
+                    <p class="card-footer-item">
+                        <span>
+                            <a href="" class="button is-link is-outlined">
+                                Submit for review
+                            </a>
+                        </span>
+                    </p>
+                </footer>
+            </div>
+        </div>
+        {{end}}
+    </section>
+{{ end }}
+
