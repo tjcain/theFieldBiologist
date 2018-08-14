@@ -6,7 +6,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
-	"github.com/tjcain/theFieldBiologist/devhelpers"
 	"github.com/tjcain/theFieldBiologist/middleware"
 	"github.com/tjcain/theFieldBiologist/models"
 )
@@ -65,24 +64,27 @@ func main() {
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
 
 	// articles
-	r.Handle("/articles/new",
+	r.Handle("/article/new",
 		requireUserMw.Apply(articlesC.NewArticle)).Methods("GET")
-	r.HandleFunc("/articles",
+	r.HandleFunc("/article/new",
 		requireUserMw.ApplyFn(articlesC.Create)).Methods("POST")
-	r.HandleFunc("/articles/{id:[0-9]+}",
+	// TODO: Move /articles to the user controller, this shows all of a single
+	// users articles
+	r.Handle("/articles",
+		requireUserMw.ApplyFn(articlesC.ShowAllArticles)).Methods("GET")
+	r.HandleFunc("/article/{id:[0-9]+}",
 		articlesC.Show).Methods("GET").Name(controllers.ShowArticle)
-	r.HandleFunc("/articles/{id:[0-9]+}/edit",
+	r.HandleFunc("/article/{id:[0-9]+}/edit",
 		requireUserMw.ApplyFn(articlesC.Edit)).Methods("GET")
-	r.HandleFunc("/articles/{id:[0-9]+}/update",
+	r.HandleFunc("/article/{id:[0-9]+}/update",
 		requireUserMw.ApplyFn(articlesC.Update)).Methods("POST")
-	r.HandleFunc("/articles/{id:[0-9]+}/delete",
+	r.HandleFunc("/article/{id:[0-9]+}/delete",
 		requireUserMw.ApplyFn(articlesC.Delete)).Methods("POST")
-	// use to find local network
+
 	// ifconfig | grep netmask
 	fmt.Println("Listening on localhost:8080")
-	fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
+	// fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
 	http.ListenAndServe(":8080", r)
-
 }
 
 // helper function that panics on error

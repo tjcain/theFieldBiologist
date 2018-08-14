@@ -1,0 +1,23 @@
+{{define "deletewarning"}}
+<div id="delete-warning-modal" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head has-background-danger">
+                <p class="modal-card-title has-text-white">Danger Zone!</p>
+            </header>
+            <section class="modal-card-body ">
+                <div class="content ">
+                    <p>Once it's gone it's gone! Only delete if you have your own backup or you are 100% sure you don't want
+                        this peice of work anymore!
+                    </p>
+                </div>
+            </section>
+            <footer class="modal-card-foot">
+            <form action="articles/{{.ID}}/delete" method="POST">
+                <button type="submit" class="button is-danger ">Yes, delete it</button>
+            </form>
+                <button class="button ">Cancel</button>
+            </footer>
+        </div>
+    </div>
+{{end}}

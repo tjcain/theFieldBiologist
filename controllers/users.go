@@ -74,7 +74,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Redirect to the cookie test page to test the cookie
-	http.Redirect(w, r, "/cookietest", http.StatusFound)
+	http.Redirect(w, r, "/articles", http.StatusFound)
 }
 
 // signIn is used to sign the given user in via cookies
@@ -130,7 +130,7 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		u.LogInView.Render(w, vd)
 		return
 	}
-	http.Redirect(w, r, "/cookietest", http.StatusFound)
+	http.Redirect(w, r, "/articles", http.StatusFound)
 }
 
 // CookieTest is a temporary function for development only. It will display

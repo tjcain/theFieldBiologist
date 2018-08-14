@@ -1,6 +1,10 @@
 package models
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+	// db drivers
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+)
 
 // Services ...
 type Services struct {

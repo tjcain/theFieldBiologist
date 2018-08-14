@@ -29,6 +29,7 @@ type Articles struct {
 	NewArticle      *views.View
 	ShowFullArticle *views.View
 	EditArticle     *views.View
+	AllArticles     *views.View
 	as              models.ArticleService
 	r               *mux.Router
 }
@@ -39,6 +40,7 @@ func NewArticles(as models.ArticleService, r *mux.Router) *Articles {
 		NewArticle:      views.NewView("pages", "articles/new"),
 		ShowFullArticle: views.NewView("pages", "articles/full"),
 		EditArticle:     views.NewView("pages", "articles/edit"),
+		AllArticles:     views.NewView("pages", "articles/all"),
 		as:              as,
 		r:               r,
 	}
@@ -139,6 +141,19 @@ func (a *Articles) Show(w http.ResponseWriter, r *http.Request) {
 	article.BodyHTML = template.HTML(article.Body)
 	vd.Yield = article
 	a.ShowFullArticle.Render(w, vd)
+}
+
+// ShowAllArticles GET /articles/:id
+func (a *Articles) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
+	user := context.User(r.Context())
+	articles, err := a.as.ByUserID(user.ID)
+	if err != nil {
+		http.Error(w, "Something went wrong.", http.StatusInternalServerError)
+		return
+	}
+	var vd views.Data
+	vd.Yield = articles
+	a.AllArticles.Render(w, vd)
 }
 
 // Edit GET /gallereis/:id/edit

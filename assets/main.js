@@ -33,3 +33,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+// // delete-warning-modal
+// var deleteWarningModal = document.getElementById("delete-warning-modal");
+// // open-warning-modal
+// var openWarningModalButton = document.getElementById("open-warning-modal");
+// //close-warning-modal
+// var closeWarningModalButton = document.getElementById("close-warning-modal");
+
+// openWarningModalButton.onclick = function () {
+//     deleteWarningModal.classList.add('is-active')
+//     console.log(deleteWarningModal.classList)
+// }

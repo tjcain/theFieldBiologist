@@ -9,8 +9,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/tjcain/theFieldBiologist/hash"
 	"github.com/tjcain/theFieldBiologist/rand"
-	// db drivers
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 const hmacSecretKey = "secret-hmac-key"
@@ -53,12 +51,13 @@ type UserService interface {
 type User struct {
 	gorm.Model
 	Name         string
-	Email        string `gorm:"not null;unique_index"`
-	Password     string `gorm:"-"`
-	PasswordHash string `gorm:"not null"`
-	Remember     string `gorm:"-"`
-	RememberHash string `gorm:"not null;unique_index"`
-	RememberMe   bool   `gorm:"-"`
+	Email        string    `gorm:"not null;unique_index"`
+	Password     string    `gorm:"-"`
+	PasswordHash string    `gorm:"not null"`
+	Remember     string    `gorm:"-"`
+	RememberHash string    `gorm:"not null;unique_index"`
+	RememberMe   bool      `gorm:"-"`
+	Articles     []Article `gorm:"foreignkey:UserID"`
 }
 
 // TODO: Delete before deployment

@@ -9,11 +9,18 @@ import (
 // Article represents data stored in the database for each article
 type Article struct {
 	gorm.Model
-	UserID   uint   `gorm:"not_null;index"`
-	UserName string `gorm:"-"`
-	Title    string `gorm:"not_null"`
-	// stored as bytea in postrges... keeps things slim
-	Body     []byte
+	UserID uint   `gorm:"not_null;index"`
+	Title  string `gorm:"not_null"`
+	// Name represents the name from the users table, it is returned from a
+	// join during database query
+	Name string `gorm:"-"`
+	// Body contains the raw HTML submitted from WYSIWYG editor, it is stored
+	// as bytea in the databse. Note: this contains escaped html, for rendering
+	// back to the webpage in a '.contents' div it needs to be cast to
+	// template.HTML
+	Body []byte
+	// BodyHTML stores template.HTML type, which removes HTML escape characters,
+	// it is needed to render the output from the WYSIWYG editor.
 	BodyHTML template.HTML `gorm:"-"`
 }
 
@@ -25,6 +32,7 @@ type ArticleService interface {
 // ArticleDB ...
 type ArticleDB interface {
 	ByID(id uint) (*Article, error)
+	ByUserID(userID uint) ([]Article, error)
 	Create(article *Article) error
 	Update(article *Article) error
 	Delete(id uint) error
@@ -122,12 +130,25 @@ type articleGorm struct {
 
 func (ag *articleGorm) ByID(id uint) (*Article, error) {
 	var article Article
-	db := ag.db.Where("id = ?", id)
+	db := ag.db.Table("articles").Select("articles.*, users.name").
+		Joins("join users on articles.user_id = users.id").
+		Where("articles.id = ?", id)
 	err := first(db, &article)
 	if err != nil {
 		return nil, err
 	}
 	return &article, nil
+}
+
+func (ag *articleGorm) ByUserID(userID uint) ([]Article, error) {
+	var articles []Article
+	db := ag.db.Table("articles").Select("articles.*, users.name").
+		Joins("join users on articles.user_id = users.id").
+		Where("user_id = ?", userID)
+	if err := db.Find(&articles).Error; err != nil {
+		return nil, err
+	}
+	return articles, nil
 }
 
 // Create ...

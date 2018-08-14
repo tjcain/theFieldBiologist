@@ -5,7 +5,7 @@
 
 {{define "editform"}}
  <section class="section">
-        <form action="/articles/{{.ID}}/update" id="wysiwygform" method="POST">
+        <form action="/article/{{.ID}}/update" id="wysiwygform" method="POST">
             <div class=" column card is-12">
                 <div class="field">
                     <label for="title" class="label">Title</label>
@@ -45,7 +45,7 @@
             </div>
         </form>
         <div class="column">
-        <form action="/articles/{{.ID}}/delete" method="POST">
+        <form action="/article/{{.ID}}/delete" method="POST">
             <button action="submit"
             id="button" 
             class="button is-block is-medium is-danger is-fullwidth">
