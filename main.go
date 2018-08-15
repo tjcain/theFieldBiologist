@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
 	"github.com/tjcain/theFieldBiologist/middleware"
 	"github.com/tjcain/theFieldBiologist/models"
+	"github.com/tjcain/theFieldBiologist/rand"
 )
 
 const (
@@ -30,6 +32,15 @@ func main() {
 
 	defer services.Close()
 	services.AutoMigrate()
+
+	// Cross-Site Request Forgery Protection
+	// TODO: Replace with perminant solution
+	isProd := false
+	b, err := rand.Bytes(32)
+	if err != nil {
+		panic(err)
+	}
+	csrfMw := csrf.Protect(b, csrf.Secure(isProd))
 
 	r := mux.NewRouter()
 	// Static Assets
@@ -86,7 +97,7 @@ func main() {
 	// ifconfig | grep netmask
 	fmt.Println("Listening on localhost:8080")
 	// fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
-	http.ListenAndServe(":8080", userMw.Apply(r))
+	http.ListenAndServe(":8080", csrfMw(userMw.Apply(r)))
 }
 
 // helper function that panics on error

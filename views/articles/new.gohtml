@@ -1,6 +1,7 @@
 {{define "yield"}}
  <section class="section">
         <form action="/article/new" method="POST" id="wysiwygform">
+        {{csrfField}}
             <div class=" column card is-12">
                 <div class="field">
                     <label for="title" class="label">Title</label>

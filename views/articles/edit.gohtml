@@ -6,6 +6,7 @@
 {{define "editform"}}
  <section class="section">
         <form action="/article/{{.ID}}/update" id="wysiwygform" method="POST">
+        {{csrfField}}
             <div class=" column card is-12">
                 <div class="field">
                     <label for="title" class="label">Title</label>
@@ -46,6 +47,7 @@
         </form>
         <div class="column">
         <form action="/article/{{.ID}}/delete" method="POST">
+        {{csrfField}}
             <button action="submit"
             id="button" 
             class="button is-block is-medium is-danger is-fullwidth">

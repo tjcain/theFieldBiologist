@@ -14,6 +14,7 @@
             </section>
             <footer class="modal-card-foot">
             <form action="articles/{{.ID}}/delete" method="POST">
+            {{csrfField}}
                 <button type="submit" class="button is-danger ">Yes, delete it</button>
             </form>
                 <button class="button ">Cancel</button>

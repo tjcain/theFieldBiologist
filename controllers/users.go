@@ -154,7 +154,6 @@ func (u *Users) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var vd views.Data
-	fmt.Println(user)
 	articles, err := u.us.ArticlesByUser(user)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

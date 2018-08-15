@@ -26,6 +26,7 @@
                                     </span>
                                 </a>
                                 <form class="is-marginless is-paddingless is-inline" action="/articles/{{.ID}}/delete" method="POST">
+                                    {{csrfField}}
                                     <button action="submit" class="button is-danger is-outlined">
                                         <span class="icon">
                                             <i class="far fa-trash-alt"></i>
