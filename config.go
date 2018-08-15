@@ -3,14 +3,18 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 )
 
 // LoadConfig attempts to load .config
-func LoadConfig() Config {
+func LoadConfig(configReq bool) Config {
 	f, err := os.Open(".config")
 	if err != nil {
-		// if err, use defaults
+		if configReq {
+			log.Fatalln("usage: need .config file when deploying in production",
+				err)
+		}
 		fmt.Println("Using the default configs...")
 		return DefaultConfig()
 	}
