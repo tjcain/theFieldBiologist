@@ -60,7 +60,8 @@ func main() {
 	r.Handle("/login", usersC.LogInView).Methods("GET")
 	r.HandleFunc("/login", usersC.LogIn).Methods("POST")
 	r.Handle("/user/articles",
-		requireUserMw.ApplyFn(usersC.ShowAllArticles)).Methods("GET")
+		requireUserMw.ApplyFn(usersC.ShowAllArticles)).Methods("GET").
+		Name(controllers.ManageArticles)
 
 	// cookietest is for dev only..
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
@@ -70,13 +71,12 @@ func main() {
 		requireUserMw.Apply(articlesC.NewArticle)).Methods("GET")
 	r.HandleFunc("/article/new",
 		requireUserMw.ApplyFn(articlesC.Create)).Methods("POST")
-	// TODO: Move /articles to the user controller, this shows all of a single
-	// users articles
 	r.HandleFunc("/articles", articlesC.ShowLatestArticles).Methods("GET")
 	r.HandleFunc("/article/{id:[0-9]+}",
 		articlesC.Show).Methods("GET").Name(controllers.ShowArticle)
 	r.HandleFunc("/article/{id:[0-9]+}/edit",
-		requireUserMw.ApplyFn(articlesC.Edit)).Methods("GET")
+		requireUserMw.ApplyFn(articlesC.Edit)).Methods("GET").
+		Name(controllers.EditArticle)
 	r.HandleFunc("/article/{id:[0-9]+}/update",
 		requireUserMw.ApplyFn(articlesC.Update)).Methods("POST")
 	r.HandleFunc("/article/{id:[0-9]+}/delete",

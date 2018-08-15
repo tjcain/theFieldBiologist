@@ -11,6 +11,11 @@ import (
 	"github.com/tjcain/theFieldBiologist/views"
 )
 
+const (
+	// Manage articles is the named route for /user/articles
+	ManageArticles = "mange_articles"
+)
+
 // SignUpForm stores data POSTed from our signup form
 type SignUpForm struct {
 	Name     string `schema:"name"`
@@ -76,7 +81,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Redirect to the cookie test page to test the cookie
-	http.Redirect(w, r, "/articles", http.StatusFound)
+	http.Redirect(w, r, "/user/articles", http.StatusFound)
 }
 
 // signIn is used to sign the given user in via cookies
@@ -132,7 +137,7 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		u.LogInView.Render(w, vd)
 		return
 	}
-	http.Redirect(w, r, "/articles", http.StatusFound)
+	http.Redirect(w, r, "/user/articles", http.StatusFound)
 }
 
 // ShowAllArticles lists all the articles belonging to a given author, this is

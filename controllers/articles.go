@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -14,8 +13,10 @@ import (
 )
 
 const (
-	// ShowArticle is the named route for generating article id urls
+	// ShowArticle is the named route for /article/:id
 	ShowArticle = "show_article"
+	// EditArticle is the named route for /article/:id/edit
+	EditArticle = "edit_article"
 )
 
 // ArticleForm holds data returned when creating or updating an article
@@ -66,7 +67,7 @@ func (a *Articles) Create(w http.ResponseWriter, r *http.Request) {
 		a.NewArticle.Render(w, vd)
 		return
 	}
-	url, err := a.r.Get(ShowArticle).URL("id", strconv.Itoa(int(article.ID)))
+	url, err := a.r.Get(ManageArticles).URL("id", strconv.Itoa(int(article.ID)))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusFound)
 		return
@@ -127,7 +128,13 @@ func (a *Articles) Delete(w http.ResponseWriter, r *http.Request) {
 		a.EditArticle.Render(w, vd)
 		return
 	}
-	fmt.Fprintln(w, "successfully deleted!")
+	url, err := a.r.Get(ManageArticles).URL("id", strconv.Itoa(int(article.ID)))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusFound)
+		return
+	}
+	http.Redirect(w, r, url.Path, http.StatusFound)
+
 }
 
 // Show GET /articles/:id
