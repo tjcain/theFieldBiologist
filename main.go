@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
+	"github.com/tjcain/theFieldBiologist/devhelpers"
 	"github.com/tjcain/theFieldBiologist/middleware"
 	"github.com/tjcain/theFieldBiologist/models"
 	"github.com/tjcain/theFieldBiologist/rand"
@@ -20,27 +21,29 @@ const (
 )
 
 func main() {
+	cfg := DefaultConfig()
+	dbCfg := DefaultPostgresConfig()
+	// Create a Services
+	services, err := models.NewServices(
+		models.WithGorm(dbCfg.Dialect(), dbCfg.connectionInfo()),
+		models.WithLogMode(!cfg.IsProd()),
+		models.WithUser(cfg.Pepper, cfg.HMACKey),
+		models.WithArticle(),
+	)
 
-	// Create a db connection
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s dbname =%s "+
-		"sslmode=disable", host, port, user, dbName)
-	// Create a UserService
-	services, err := models.NewServices(psqlInfo)
-	if err != nil {
-		panic(err)
-	}
-
+	// services, err := models.NewServices(dbCfg.Dialect(), dbCfg.connectionInfo())
+	// if err != nil {
+	// 	panic(err)
+	// }
 	defer services.Close()
 	services.AutoMigrate()
 
 	// Cross-Site Request Forgery Protection
-	// TODO: Replace with perminant solution
-	isProd := false
 	b, err := rand.Bytes(32)
 	if err != nil {
 		panic(err)
 	}
-	csrfMw := csrf.Protect(b, csrf.Secure(isProd))
+	csrfMw := csrf.Protect(b, csrf.Secure(cfg.IsProd()))
 
 	r := mux.NewRouter()
 	// Static Assets
@@ -94,10 +97,13 @@ func main() {
 	r.HandleFunc("/article/{id:[0-9]+}/delete",
 		requireUserMw.ApplyFn(articlesC.Delete)).Methods("POST")
 
-	// ifconfig | grep netmask
-	fmt.Println("Listening on localhost:8080")
-	// fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
-	http.ListenAndServe(":8080", csrfMw(userMw.Apply(r)))
+	// startup
+	fmt.Printf("Listening on localhost:%d\n", cfg.Port)
+	// local network
+	if !cfg.IsProd() {
+		fmt.Printf("Listening on local network %s:%d\n", devhelpers.LocalIP(), cfg.Port)
+	}
+	http.ListenAndServe(fmt.Sprintf(":%d", cfg.Port), csrfMw(userMw.Apply(r)))
 }
 
 // helper function that panics on error
