@@ -1,6 +1,52 @@
 package main
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+)
+
+// LoadConfig attempts to load .config
+func LoadConfig() Config {
+	f, err := os.Open(".config")
+	if err != nil {
+		// if err, use defaults
+		fmt.Println("Using the default configs...")
+		return DefaultConfig()
+	}
+	var c Config
+	d := json.NewDecoder(f)
+	if err := d.Decode(&c); err != nil {
+		panic(err)
+	}
+	fmt.Println("Successfully loaded .config")
+	return c
+}
+
+// Config holds start up configuration variables
+type Config struct {
+	Port     int            `json:"port"`
+	Env      string         `json:"env"`
+	Pepper   string         `json:"pepper"`
+	HMACKey  string         `json:"hmac_key"`
+	Database PostgresConfig `json:"database"`
+}
+
+// DefaultConfig generates development environment variables
+func DefaultConfig() Config {
+	return Config{
+		Port:     8080,
+		Env:      "dev",
+		Pepper:   "secret-random-string",
+		HMACKey:  "secret-hmac-key",
+		Database: DefaultPostgresConfig(),
+	}
+}
+
+// IsProd returns true if app is build for production
+func (c Config) IsProd() bool {
+	return c.Env == "prod"
+}
 
 // PostgresConfig holds config variables for connecting to postgres
 type PostgresConfig struct {
@@ -35,27 +81,4 @@ func (c PostgresConfig) connectionInfo() string {
 	}
 	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname =%s "+
 		"sslmode=disable", c.Host, c.Port, c.User, c.Password, c.Name)
-}
-
-// Config holds start up configuration variables
-type Config struct {
-	Port    int    `json:"port"`
-	Env     string `json:"env"`
-	Pepper  string `json:"pepper"`
-	HMACKey string `json:"hmac_key"`
-}
-
-// DefaultConfig generates development environment variables
-func DefaultConfig() Config {
-	return Config{
-		Port:    8080,
-		Env:     "dev",
-		Pepper:  "secret-random-string",
-		HMACKey: "secret-hmac-key",
-	}
-}
-
-// IsProd returns true if app is build for production
-func (c Config) IsProd() bool {
-	return c.Env == "prod"
 }

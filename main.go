@@ -21,7 +21,8 @@ const (
 )
 
 func main() {
-	cfg := DefaultConfig()
+	// Load config file or return defaults
+	cfg := LoadConfig()
 	dbCfg := DefaultPostgresConfig()
 	// Create a Services
 	services, err := models.NewServices(
