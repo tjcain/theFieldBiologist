@@ -79,6 +79,7 @@ func main() {
 	r.HandleFunc("/signup", usersC.Create).Methods("POST")
 	r.Handle("/login", usersC.LogInView).Methods("GET")
 	r.HandleFunc("/login", usersC.LogIn).Methods("POST")
+	r.Handle("/logout", requireUserMw.ApplyFn(usersC.LogOut)).Methods("POST")
 	r.Handle("/user/articles",
 		requireUserMw.ApplyFn(usersC.ShowAllArticles)).Methods("GET").
 		Name(controllers.ManageArticles)

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/tjcain/theFieldBiologist/context"
 	"github.com/tjcain/theFieldBiologist/models"
 	"github.com/tjcain/theFieldBiologist/rand"
 	"github.com/tjcain/theFieldBiologist/views"
@@ -109,8 +110,7 @@ func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 	return nil
 }
 
-// LogIn processes a login form when a user attempts to log in with a
-// email and password
+// LogIn POST /login
 func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 	var form LogInForm
 	var vd views.Data
@@ -138,6 +138,25 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	http.Redirect(w, r, "/user/articles", http.StatusFound)
+}
+
+// LogOut POST /logout
+func (u *Users) LogOut(w http.ResponseWriter, r *http.Request) {
+	// expire cookie
+	cookie := http.Cookie{
+		Name:     "remember_token",
+		Value:    "",
+		Expires:  time.Now(),
+		HttpOnly: true,
+	}
+	http.SetCookie(w, &cookie)
+	user := context.User(r.Context())
+	// error ignored - error is unlikely, and cannot recover here even if
+	// there is one....
+	token, _ := rand.RememberToken()
+	user.Remember = token
+	u.us.Update(user)
+	http.Redirect(w, r, "/", http.StatusFound)
 }
 
 // ShowAllArticles lists all the articles belonging to a given author, this is

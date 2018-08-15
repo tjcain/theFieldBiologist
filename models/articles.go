@@ -22,6 +22,10 @@ type Article struct {
 	// BodyHTML stores template.HTML type, which removes HTML escape characters,
 	// it is needed to render the output from the WYSIWYG editor.
 	BodyHTML template.HTML `gorm:"-"`
+	// Snippet stores an N byte snippet of the text contained within the first
+	// occurance of <p> </p> tags with ... appended.
+	Snippet     []byte
+	SnippedHTML template.HTML `gorm:"-"`
 }
 
 // ArticleService ...
@@ -177,3 +181,7 @@ func (ag *articleGorm) Delete(id uint) error {
 	article := Article{Model: gorm.Model{ID: id}}
 	return ag.db.Delete(&article).Error
 }
+
+// func generateSnippet(article *Article) ([]byte, error) {
+
+// }

@@ -7,7 +7,6 @@
         <a class="navbar-item has-text-weight-bold tfb" href="/">
             <p>The <span class="has-text-primary">Field</span> Biologist</p>
         </a>
-
         <a role="button" class="navbar-burger has-text-white" aria-label="menu" data-target="navMenu" aria-expanded="false">
             <span aria-hidden="true"></span>
             <span aria-hidden="true"></span>
@@ -16,12 +15,12 @@
     </div>
     <div class="navbar-menu is-black" id="navMenu">
         <div class="navbar-end">
-            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="/news">
+            <!-- <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="/news">
                 NEWS
             </a>
             <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="/news">
                 NEWS
-            </a>
+            </a> -->
             <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="/about">
                 ABOUT US
             </a>
@@ -34,29 +33,32 @@
             <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="/contact">
                 CONTACT
             </a>
-            <div class="navbar-item has-dropdown is-hoverable is-right">
-                <a class="navbar-link has-text-weight-bold has-text-white is-hidden-touch" href="#">
-                    Content
-                </a>
-                <a class="navbar-link has-text-weight-bold has-text-black is-hidden-desktop" href="#">
-                    Content
-                </a>
-
-                <div class="navbar-dropdown has-text-black is-right">
-                    <a class="navbar-item heading" href="#">
-                        Life In The Field
+            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="/articles">
+                ARTICLES
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="/articles">
+                ARTICLES
+            </a>
+            {{ if .User}}
+             <div class="navbar-item has-dropdown is-hoverable is-right">
+                    <a class="navbar-link has-text-weight-bold has-text-primary" href="#">
+                        ACCOUNT
                     </a>
-                    <a class="navbar-item heading" href="#">
-                        Tools of The Trade
-                    </a>
-                    <a class="navbar-item heading" href="#">
-                        Conservation
-                    </a>
-                    <a class="navbar-item heading" href="#">
-                        Photography
-                    </a>
+                    <div class="navbar-dropdown has-text-black is-right">
+                        <a class="navbar-item heading" href="/user/articles">
+                            Create
+                        </a>
+                        <a class="navbar-item heading" href="/articles">
+                            Read
+                        </a>
+                        <a class="navbar-item heading" href="/user/settings">
+                            Settings
+                        </a>
+                        <hr class="navbar-divider">
+                            {{ template "logout" }}
+                    </div>
                 </div>
-            </div>
+                {{end}}
             {{ if not .User}}
                 <a class="navbar-item has-text-weight-bold has-text-primary" href="/login">
                     LOGIN | REGISTER
@@ -68,3 +70,14 @@
     </div>
  </nav>
 {{end}}
+
+{{ define "logout" }}
+
+<form class="navbar-item" action="/logout" method="POST">
+ {{csrfField}}
+        <button class="button is-white heading is-paddingless">
+            Logout
+        </button>
+</form>
+
+{{ end }}
