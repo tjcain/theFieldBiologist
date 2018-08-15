@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -17,6 +20,13 @@ const (
 	ShowArticle = "show_article"
 	// EditArticle is the named route for /article/:id/edit
 	EditArticle = "edit_article"
+	// lenSnippet dictates the length of snippet created
+	lenSnippet = 40
+)
+
+var (
+	// reg is the regexp to match the first paragraph of an article
+	reg = regexp.MustCompile(`<p.*?>(.*?)</p>`)
 )
 
 // ArticleForm holds data returned when creating or updating an article
@@ -161,6 +171,7 @@ func (a *Articles) ShowLatestArticles(w http.ResponseWriter, r *http.Request) {
 	// TODO: think of a better way to do this:
 	for i, article := range articles {
 		articles[i].BodyHTML = template.HTML(article.Body)
+		articles[i].SnippedHTML = generateSnippet(articles[i].BodyHTML)
 	}
 
 	var vd views.Data
@@ -209,4 +220,26 @@ func (a *Articles) ArticleByID(w http.ResponseWriter,
 		return nil, err
 	}
 	return article, nil
+}
+
+// THIS WILL NEED ADJUSTING.....
+func generateSnippet(bodyHTML template.HTML) template.HTML {
+	p := reg.FindString(string(bodyHTML))
+	// fmt.Println(p)
+	words := strings.Split(p, " ")
+	switch {
+	case len(words) <= 1:
+		return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
+			"we are working on improving this... </p>")
+	case len(words) <= lenSnippet:
+		return template.HTML(strings.Join(words, " ") + "...")
+	case len(words) > lenSnippet:
+		fmt.Println(template.HTML(strings.Join(words[:lenSnippet], " ") + "..."))
+		return template.HTML(strings.Join(words[:lenSnippet], " ") + "...")
+		// default:
+		// 	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
+		// 		"we are working on improving this... </p>")
+	}
+	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
+		"we are working on improving this... </p>")
 }

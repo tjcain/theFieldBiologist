@@ -24,7 +24,7 @@ type Article struct {
 	BodyHTML template.HTML `gorm:"-"`
 	// Snippet stores an N byte snippet of the text contained within the first
 	// occurance of <p> </p> tags with ... appended.
-	Snippet     []byte
+
 	SnippedHTML template.HTML `gorm:"-"`
 }
 
@@ -181,7 +181,3 @@ func (ag *articleGorm) Delete(id uint) error {
 	article := Article{Model: gorm.Model{ID: id}}
 	return ag.db.Delete(&article).Error
 }
-
-// func generateSnippet(article *Article) ([]byte, error) {
-
-// }
