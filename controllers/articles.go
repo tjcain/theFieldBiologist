@@ -53,7 +53,7 @@ func (a *Articles) Create(w http.ResponseWriter, r *http.Request) {
 	var form ArticleForm
 	if err := parseForm(r, &form); err != nil {
 		vd.SetAlert(err)
-		a.NewArticle.Render(w, vd)
+		a.NewArticle.Render(w, r, vd)
 		return
 	}
 	user := context.User(r.Context())
@@ -64,7 +64,7 @@ func (a *Articles) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := a.as.Create(&article); err != nil {
 		vd.SetAlert(err)
-		a.NewArticle.Render(w, vd)
+		a.NewArticle.Render(w, r, vd)
 		return
 	}
 	url, err := a.r.Get(ManageArticles).URL("id", strconv.Itoa(int(article.ID)))
@@ -93,7 +93,7 @@ func (a *Articles) Update(w http.ResponseWriter, r *http.Request) {
 	var form ArticleForm
 	if err := parseForm(r, &form); err != nil {
 		vd.SetAlert(err)
-		a.EditArticle.Render(w, vd)
+		a.EditArticle.Render(w, r, vd)
 		return
 	}
 	article.Title = form.Title
@@ -105,7 +105,7 @@ func (a *Articles) Update(w http.ResponseWriter, r *http.Request) {
 		Level:   views.AlertLvlSuccess,
 		Message: "Article updated successfully",
 	}
-	a.EditArticle.Render(w, vd)
+	a.EditArticle.Render(w, r, vd)
 }
 
 // Delete POST /articles/:id/delete
@@ -125,7 +125,7 @@ func (a *Articles) Delete(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		vd.SetAlert(err)
 		vd.Yield = article
-		a.EditArticle.Render(w, vd)
+		a.EditArticle.Render(w, r, vd)
 		return
 	}
 	url, err := a.r.Get(ManageArticles).URL("id", strconv.Itoa(int(article.ID)))
@@ -147,7 +147,7 @@ func (a *Articles) Show(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	article.BodyHTML = template.HTML(article.Body)
 	vd.Yield = article
-	a.ShowFullArticle.Render(w, vd)
+	a.ShowFullArticle.Render(w, r, vd)
 }
 
 // ShowLatestArticles GET /articles
@@ -165,7 +165,7 @@ func (a *Articles) ShowLatestArticles(w http.ResponseWriter, r *http.Request) {
 
 	var vd views.Data
 	vd.Yield = articles
-	a.AllArticles.Render(w, vd)
+	a.AllArticles.Render(w, r, vd)
 }
 
 // Edit GET /gallereis/:id/edit
@@ -183,7 +183,7 @@ func (a *Articles) Edit(w http.ResponseWriter, r *http.Request) {
 	article.BodyHTML = template.HTML(article.Body)
 	var vd views.Data
 	vd.Yield = article
-	a.EditArticle.Render(w, vd)
+	a.EditArticle.Render(w, r, vd)
 
 }
 

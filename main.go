@@ -43,9 +43,10 @@ func main() {
 	articlesC := controllers.NewArticles(services.Article, r)
 
 	// middleware
-	requireUserMw := middleware.RequireUser{
+	userMw := middleware.User{
 		UserService: services.User,
 	}
+	requireUserMw := middleware.RequireUser{}
 
 	// newArticle := requireUserMw.Apply(articlesC.NewArticle)
 	// createArticle := requireUserMw.ApplyFn(articlesC.Create)
@@ -85,7 +86,7 @@ func main() {
 	// ifconfig | grep netmask
 	fmt.Println("Listening on localhost:8080")
 	// fmt.Println("Listening on local network:", devhelpers.LocalIP()+":8080")
-	http.ListenAndServe(":8080", r)
+	http.ListenAndServe(":8080", userMw.Apply(r))
 }
 
 // helper function that panics on error

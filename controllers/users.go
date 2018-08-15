@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	// Manage articles is the named route for /user/articles
+	// ManageArticles is the named route for /user/articles
 	ManageArticles = "mange_articles"
 )
 
@@ -51,7 +51,7 @@ func NewUsers(us models.UserService) *Users {
 
 // New renders a new user view.
 func (u *Users) New(w http.ResponseWriter, r *http.Request) {
-	u.NewView.Render(w, nil)
+	u.NewView.Render(w, r, nil)
 }
 
 // Create is a handler function responsible for handing the post request
@@ -62,7 +62,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	if err := parseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
-		u.NewView.Render(w, vd)
+		u.NewView.Render(w, r, vd)
 		return
 	}
 	user := models.User{
@@ -72,7 +72,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	}
 	if err := u.us.Create(&user); err != nil {
 		vd.SetAlert(err)
-		u.NewView.Render(w, vd)
+		u.NewView.Render(w, r, vd)
 		return
 	}
 	err := u.signIn(w, &user)
@@ -116,7 +116,7 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	if err := parseForm(r, &form); err != nil {
 		vd.SetAlert(err)
-		u.LogInView.Render(w, vd)
+		u.LogInView.Render(w, r, vd)
 		return
 	}
 	user, err := u.us.Authenticate(form.Email, form.Password)
@@ -127,14 +127,14 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 		default:
 			vd.SetAlert(err)
 		}
-		u.LogInView.Render(w, vd)
+		u.LogInView.Render(w, r, vd)
 		return
 	}
 	user.RememberMe = form.RememberMe
 	err = u.signIn(w, user)
 	if err != nil {
 		vd.SetAlert(err)
-		u.LogInView.Render(w, vd)
+		u.LogInView.Render(w, r, vd)
 		return
 	}
 	http.Redirect(w, r, "/user/articles", http.StatusFound)
@@ -162,7 +162,7 @@ func (u *Users) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
 	}
 	vd.User = user
 	vd.Yield = articles
-	u.AllArticlesView.Render(w, vd)
+	u.AllArticlesView.Render(w, r, vd)
 
 }
 

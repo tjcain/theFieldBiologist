@@ -7,6 +7,38 @@ import (
 	"github.com/tjcain/theFieldBiologist/models"
 )
 
+// User middleware looks up the current user by remember_token. If the user is
+// found, they will be set on the request context.
+// Regardless of result, the next handler is always called.
+type User struct {
+	models.UserService
+}
+
+// Apply ...
+func (mw *User) Apply(next http.Handler) http.HandlerFunc {
+	return mw.ApplyFn(next.ServeHTTP)
+}
+
+// ApplyFn ...
+func (mw *User) ApplyFn(next http.HandlerFunc) http.HandlerFunc {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cookie, err := r.Cookie("remember_token")
+		if err != nil {
+			next(w, r)
+			return
+		}
+		user, err := mw.UserService.ByRemember(cookie.Value)
+		if err != nil {
+			next(w, r)
+			return
+		}
+		ctx := r.Context()
+		ctx = context.WithUser(ctx, user)
+		r = r.WithContext(ctx)
+		next(w, r)
+	})
+}
+
 // RequireUser contains the UserService
 type RequireUser struct {
 	models.UserService
@@ -22,19 +54,11 @@ func (mw *RequireUser) Apply(next http.Handler) http.HandlerFunc {
 // the login page if they are not.
 func (mw *RequireUser) ApplyFn(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		cookie, err := r.Cookie("remember_token")
-		if err != nil {
+		user := context.User(r.Context())
+		if user == nil {
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
-		user, err := mw.UserService.ByRemember(cookie.Value)
-		if err != nil {
-			http.Redirect(w, r, "/login", http.StatusFound)
-			return
-		}
-		ctx := r.Context()
-		ctx = context.WithUser(ctx, user)
-		r = r.WithContext(ctx)
 		next(w, r)
 	})
 }

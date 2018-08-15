@@ -57,9 +57,11 @@
                     </a>
                 </div>
             </div>
-            <a class="navbar-item has-text-weight-bold has-text-primary" href="/login">
-                LOGIN | REGISTER
-            </a>
+            {{ if not .User}}
+                <a class="navbar-item has-text-weight-bold has-text-primary" href="/login">
+                    LOGIN | REGISTER
+                </a>
+            {{end}}
             </div>
             </div>
         </div>
