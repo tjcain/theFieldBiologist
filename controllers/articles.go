@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"html/template"
 	"net/http"
 	"regexp"
@@ -229,17 +228,20 @@ func generateSnippet(bodyHTML template.HTML) template.HTML {
 	words := strings.Split(p, " ")
 	switch {
 	case len(words) <= 1:
-		return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
-			"we are working on improving this... </p>")
+		return template.HTML("<p class=\"has-text-grey-light\">" +
+			"Sorry, couldn't create a snippet " + "for this article we are " +
+			"working on improving this... </p>")
 	case len(words) <= lenSnippet:
-		return template.HTML(strings.Join(words, " ") + "...")
+		return template.HTML("<span class=\"has-text-grey-light\">" +
+			strings.Join(words, " ") + "...")
 	case len(words) > lenSnippet:
-		fmt.Println(template.HTML(strings.Join(words[:lenSnippet], " ") + "..."))
-		return template.HTML(strings.Join(words[:lenSnippet], " ") + "...")
+		return template.HTML("<span class=\"has-text-grey-light\">" +
+			strings.Join(words[:lenSnippet], " ") + "..." + "</span>")
 		// default:
 		// 	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
 		// 		"we are working on improving this... </p>")
 	}
-	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
-		"we are working on improving this... </p>")
+	return template.HTML("<p class=\"has-text-grey-light\">" +
+		"Sorry, couldn't create a snippet " + "for this article we are " +
+		"working on improving this... </p>")
 }
