@@ -1,4 +1,8 @@
-{{ define "yield"}}
+{{define "yield"}}
+    {{template "login" .Yield }}
+{{end}}
+
+{{ define "login"}}
 
  <section class="section has-text-centered">
         <div class="column content is-4 is-offset-4 has-text-grey-light">
@@ -7,7 +11,7 @@
         </div>
         <form action="/login" method="POST">
         {{csrfField}}
-            <div class=" column box is-6 is-offset-3">
+            <div class=" column card is-6 is-offset-3">
                 <div class="field">
                     <p class="control has-icons-left has-icons-right">
                         <input class="input is-medium" 
@@ -15,12 +19,13 @@
                                id="email" 
                                name="email" 
                                placeholder="Your Email"
-                               value=""> 
+                               value="{{.Email}}"> 
                         <span class="icon is-small is-left">
                             <i class="fas fa-envelope"></i>
                         </span>
                     </p>
                 </div>
+
                 <div class="field">
                     <p class="control has-icons-left">
                         <input class="input is-medium" 

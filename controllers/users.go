@@ -58,8 +58,10 @@ func (u *Users) New(w http.ResponseWriter, r *http.Request) {
 // Create is a handler function responsible for handing the post request
 // made by our signup form
 func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
-	var form SignUpForm
 	var vd views.Data
+	var form SignUpForm
+	vd.Yield = &form
+	fmt.Printf("%+v\n", vd.Yield)
 	if err := parseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
@@ -114,6 +116,8 @@ func (u *Users) signIn(w http.ResponseWriter, user *models.User) error {
 func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 	var form LogInForm
 	var vd views.Data
+	vd.Yield = &form
+
 	if err := parseForm(r, &form); err != nil {
 		vd.SetAlert(err)
 		u.LogInView.Render(w, r, vd)
@@ -123,6 +127,7 @@ func (u *Users) LogIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case models.ErrNotFound:
+			fmt.Printf("%+v\n", vd.Yield)
 			vd.AlertError("No user exists with that email address")
 		default:
 			vd.SetAlert(err)
