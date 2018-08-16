@@ -60,6 +60,7 @@ func main() {
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
 	articlesC := controllers.NewArticles(services.Article, r)
+	indexC := controllers.NewIndex(services.Article, r)
 
 	// middleware
 	userMw := middleware.User{
@@ -71,7 +72,7 @@ func main() {
 	// createArticle := requireUserMw.ApplyFn(articlesC.Create)
 
 	// handlers
-	r.Handle("/", staticC.HomeView).Methods("GET")
+	r.HandleFunc("/", indexC.Index).Methods("GET")
 	r.Handle("/about", staticC.AboutView).Methods("GET")
 
 	// users

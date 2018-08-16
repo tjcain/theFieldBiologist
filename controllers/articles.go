@@ -3,9 +3,7 @@ package controllers
 import (
 	"html/template"
 	"net/http"
-	"regexp"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -20,12 +18,6 @@ const (
 	// EditArticle is the named route for /article/:id/edit
 	EditArticle = "edit_article"
 	// lenSnippet dictates the length of snippet created
-	lenSnippet = 40
-)
-
-var (
-	// reg is the regexp to match the first paragraph of an article
-	reg = regexp.MustCompile(`<p.*?>(.*?)</p>`)
 )
 
 // ArticleForm holds data returned when creating or updating an article
@@ -219,29 +211,4 @@ func (a *Articles) ArticleByID(w http.ResponseWriter,
 		return nil, err
 	}
 	return article, nil
-}
-
-// THIS WILL NEED ADJUSTING.....
-func generateSnippet(bodyHTML template.HTML) template.HTML {
-	p := reg.FindString(string(bodyHTML))
-	// fmt.Println(p)
-	words := strings.Split(p, " ")
-	switch {
-	case len(words) <= 1:
-		return template.HTML("<p class=\"has-text-grey-light\">" +
-			"Sorry, couldn't create a snippet " + "for this article we are " +
-			"working on improving this... </p>")
-	case len(words) <= lenSnippet:
-		return template.HTML("<span class=\"has-text-grey-light\">" +
-			strings.Join(words, " ") + "...")
-	case len(words) > lenSnippet:
-		return template.HTML("<span class=\"has-text-grey-light\">" +
-			strings.Join(words[:lenSnippet], " ") + "..." + "</span>")
-		// default:
-		// 	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
-		// 		"we are working on improving this... </p>")
-	}
-	return template.HTML("<p class=\"has-text-grey-light\">" +
-		"Sorry, couldn't create a snippet " + "for this article we are " +
-		"working on improving this... </p>")
 }

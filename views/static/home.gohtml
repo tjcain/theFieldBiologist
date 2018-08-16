@@ -3,7 +3,7 @@
         <div class="card-overlay">
             <div class="hero-head">
                 <!-- NAVBAR -->
-                {{template "navbar" .}}
+                {{template "navbar" . }}
                 <!-- /NAVBAR -->
             </div>
 
@@ -129,33 +129,7 @@
             </div>
             <div class="hero-body spacer-2">
                 <div class="columns is-multiline ">
-                    <div class="column is-6 ">
-                        <div class="card ">
-                            <div class="card-content ">
-                                <p class="title has-text-grey-dark font-size-1-5">
-                                    Title of article </p>
-                                <p class="content has-text-grey ">
-                                    A summary of the article... (or the first paragraph...) Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsum eos
-                                    facilis non sunt, itaque, delectus possimus vitae aliquid nulla dolorum earum molestias
-                                    adipisci esse corporis labore ut dignissimos minima nisi.
-                                </p>
-                                <p class="content has-text-info heading ">
-                                    Gear Review
-                                </p>
-
-                            </div>
-                            <footer class="card-footer ">
-
-                                <p class="card-footer-item has-text-weight-bold heading has-text-primary ">
-
-                                    <i class="fas fa-star has-text-warning "></i>
-                                    <span class="has-text-black favorite-icon-padding">45</span>
-                                </p>
-                                <a href="# " class="card-footer-item has-text-weight-bold heading has-text-primary ">READ</a>
-                                <a href="# " class="card-footer-item has-text-weight-bold heading has-text-primary ">SHARE</a>
-                            </footer>
-                        </div>
-                    </div>
+                {{template "latestarticles" .Yield}}
                     <!-- REPEATING CARDS -->
 
                     <!-- /REPEATING CARDS  -->
@@ -166,4 +140,45 @@
     </article>
     <!-- /FEATURED ARTICLES -->
     {{template "footer"}}
+{{end}}
+
+{{define "latestarticles"}}
+    {{range .LatestArticles }}
+        <div class="column is-6">
+            <div class="card">
+                <div class="card-content">
+                    <div class="columns">
+                        <div class="column is-three-quarters">
+                            <p class="title is-4">
+                                {{.Title}}
+                            </p>
+                            <p class="subtitle is-6">
+                                {{.Name}}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="content">
+                    {{.SnippedHTML}}
+                    </div>
+                    <p class="content has-text-info heading ">
+                        Catagory will go here
+                    </p>
+                </div>
+                <footer class="card-footer">
+                <p class="card-footer-item has-text-weight-bold heading has-text-primary ">
+
+                    <i class="fas fa-star has-text-warning "></i>
+                    <span class="has-text-black favorite-icon-padding"> comming soon </span>
+                    </p>
+
+
+
+                    <a href="# " class="card-footer-item has-text-weight-bold heading has-text-primary ">comming soon</a>
+                    <a href="/article/{{.ID}}" class="card-footer-item has-text-weight-bold heading has-text-primary ">READ</a>
+                    
+                </footer>
+            </div>
+        </div>
+    {{end}}
+                   
 {{end}}

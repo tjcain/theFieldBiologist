@@ -41,6 +41,7 @@ type ArticleDB interface {
 	Create(article *Article) error
 	Update(article *Article) error
 	Delete(id uint) error
+	LatestArticles(limit int) ([]Article, error)
 }
 
 type articleService struct {
@@ -161,6 +162,16 @@ func (ag *articleGorm) GetAll() ([]Article, error) {
 	db := ag.db.Table("articles").Select("articles.*, users.name").
 		Joins("join users on articles.user_id = users.id")
 	if err := db.Find(&articles).Error; err != nil {
+		return nil, err
+	}
+	return articles, nil
+}
+
+func (ag *articleGorm) LatestArticles(limit int) ([]Article, error) {
+	var articles []Article
+	db := ag.db.Table("articles").Select("articles.*, users.name").
+		Joins("join users on articles.user_id = users.id")
+	if err := db.Limit(limit).Find(&articles).Error; err != nil {
 		return nil, err
 	}
 	return articles, nil
