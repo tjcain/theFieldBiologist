@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	lenSnippet = 40
+	lenSnippet = 20
 )
 
 var (

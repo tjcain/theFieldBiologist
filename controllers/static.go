@@ -6,15 +6,16 @@ import (
 
 // Static represents static page views
 type Static struct {
-	AboutView *views.View
+	AboutView   *views.View
+	ContactView *views.View
 	// TODO: Rest of semi static pages:
-	// Contact
 	// News
 }
 
 // NewStatic returns a static controller
 func NewStatic() *Static {
 	return &Static{
-		AboutView: views.NewView("pages", "static/about"),
+		AboutView:   views.NewView("pages", "static/about"),
+		ContactView: views.NewView("pages", "static/contact"),
 	}
 }

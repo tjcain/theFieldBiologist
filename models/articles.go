@@ -161,7 +161,7 @@ func (ag *articleGorm) GetAll() ([]Article, error) {
 	var articles []Article
 	db := ag.db.Table("articles").Select("articles.*, users.name").
 		Joins("join users on articles.user_id = users.id")
-	if err := db.Find(&articles).Error; err != nil {
+	if err := db.Order("created_at desc").Find(&articles).Error; err != nil {
 		return nil, err
 	}
 	return articles, nil
@@ -171,7 +171,7 @@ func (ag *articleGorm) LatestArticles(limit int) ([]Article, error) {
 	var articles []Article
 	db := ag.db.Table("articles").Select("articles.*, users.name").
 		Joins("join users on articles.user_id = users.id")
-	if err := db.Limit(limit).Find(&articles).Error; err != nil {
+	if err := db.Limit(limit).Order("created_at desc").Find(&articles).Error; err != nil {
 		return nil, err
 	}
 	return articles, nil

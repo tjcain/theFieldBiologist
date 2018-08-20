@@ -26,3 +26,11 @@ exp/
 # todo
 TODO.md
 
+# static quill related files
+assets/quill.*
+assets/examples/
+assets/fa.css  
+assets/jquery.min.js
+
+# bulma static
+assets/bulma.*
