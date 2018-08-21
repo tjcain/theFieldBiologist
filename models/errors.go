@@ -10,9 +10,12 @@ const (
 	// ErrPasswordInvalid is returned when a user attemptes to log in using an
 	// incorrect password and cannot be authenticated
 	ErrPasswordInvalid modelError = "models: incorrect password provided"
+	// ErrNameRequired is returned when the name address field is empty when
+	// attempting to create a user
+	ErrNameRequired modelError = "models: a name is required"
 	// ErrEmailRequired is returned when an email address field is empty when
 	// attempting to create a user
-	ErrEmailRequired modelError = "models: email address required"
+	ErrEmailRequired modelError = "models: an email address is required"
 	// ErrEmailInvalid is returned when a provided email address
 	// does not pass validation
 	ErrEmailInvalid modelError = "models: email address is invalid"

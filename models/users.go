@@ -50,7 +50,7 @@ type UserService interface {
 // User is a model of user details
 type User struct {
 	gorm.Model
-	Name         string
+	Name         string    `gorm:"not null"`
 	Email        string    `gorm:"not null;unique_index"`
 	Password     string    `gorm:"-"`
 	PasswordHash string    `gorm:"not null"`
@@ -283,6 +283,13 @@ func (uv *userValidator) requireEmail(user *User) error {
 	return nil
 }
 
+func (uv *userValidator) requireName(user *User) error {
+	if user.Name == "" {
+		return ErrNameRequired
+	}
+	return nil
+}
+
 func (uv *userValidator) emailFormat(user *User) error {
 	if user.Email == "" {
 		return nil
@@ -358,6 +365,7 @@ func (uv *userValidator) rememberHashRequired(user *User) error {
 // like the ID, CreatedAt, and UpdatedAt fields.
 func (uv *userValidator) Create(user *User) error {
 	err := runUserValFns(user,
+		uv.requireName,
 		uv.passwordRequired,
 		uv.passwordMinLength,
 		uv.bcryptPassword,
@@ -380,6 +388,7 @@ func (uv *userValidator) Create(user *User) error {
 
 func (uv *userValidator) Update(user *User) error {
 	err := runUserValFns(user,
+		uv.requireName,
 		uv.passwordMinLength,
 		uv.bcryptPassword,
 		uv.passwordHashRequired,
