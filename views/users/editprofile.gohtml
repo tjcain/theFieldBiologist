@@ -1,0 +1,31 @@
+{{ define "yield" }}
+    {{ template "userprofileview" .User }}
+{{ end }}
+
+{{ define "userprofileview" }}
+   <section class="section">
+        <div class="column card is-10 is-offset-1">
+            <div class="card-content">
+                <p class="title is-4">{{.Name}}</p>
+                <form action="">
+                {{csrfField}}
+                    <div class="field">
+                        <label for="" class="label">Bio</label>
+                        <div class="control">
+                            <textarea onkeyup="charcountupdate(this.value)" maxlength="200" class="textarea" placeholder="Write a short bio"></textarea>
+                        </div>
+                        <p id="charcount" class="help has-text-right has-text-grey-light"></p>
+                    </div>
+                    <div class="field is-grouped">
+                        <div class="control">
+                            <button class="button is-primary">Save</button>
+                        </div>
+                        <div class="control">
+                            <a class="button is-text">Cancel</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+{{ end }}
