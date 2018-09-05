@@ -48,7 +48,7 @@ func (s *Services) DestructiveReset() error {
 	return s.AutoMigrate()
 }
 
-// AutoMigrate will attempt to automatically migrate the users table
+// AutoMigrate will attempt to automatically migrate the users and article table
 func (s *Services) AutoMigrate() error {
 	if err := s.db.AutoMigrate(&User{}, Article{}).Error; err != nil {
 		return err

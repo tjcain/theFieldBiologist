@@ -7,12 +7,17 @@
         <div class="column card is-10 is-offset-1">
             <div class="card-content">
                 <p class="title is-4">{{.Name}}</p>
-                <form action="">
+                <form action="/user/edit"
+                      method="POST">
                 {{csrfField}}
                     <div class="field">
                         <label for="" class="label">Bio</label>
                         <div class="control">
-                            <textarea onkeyup="charcountupdate(this.value)" maxlength="200" class="textarea" placeholder="Write a short bio"></textarea>
+                            <textarea onkeyup="charcountupdate(this.value)" 
+                                      maxlength="200" 
+                                      class="textarea" 
+                                      placeholder="Write a short bio"
+                                      name="bio">{{.Bio}}</textarea>
                         </div>
                         <p id="charcount" class="help has-text-right has-text-grey-light"></p>
                     </div>
@@ -21,7 +26,8 @@
                             <button class="button is-primary">Save</button>
                         </div>
                         <div class="control">
-                            <a class="button is-text">Cancel</a>
+                            <a class="button is-text"
+                               href="/user/{{.ID}}">Cancel</a>
                         </div>
                     </div>
                 </form>

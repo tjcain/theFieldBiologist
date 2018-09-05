@@ -40,25 +40,8 @@
                 ARTICLES
             </a>
             {{ if .User}}
-             <div class="navbar-item has-dropdown is-hoverable is-right">
-                    <a class="navbar-link has-text-weight-bold has-text-primary" href="#">
-                        ACCOUNT
-                    </a>
-                    <div class="navbar-dropdown has-text-black is-right">
-                        <a class="navbar-item heading" href="/user/articles">
-                            Create
-                        </a>
-                        <a class="navbar-item heading" href="/articles">
-                            Read
-                        </a>
-                        <a class="navbar-item heading" href="/user/settings">
-                            Settings
-                        </a>
-                        <hr class="navbar-divider">
-                            {{ template "logout" }}
-                    </div>
-                </div>
-                {{end}}
+                {{template "usercontrols" .User }}
+            {{end}}
             {{ if not .User}}
                 <a class="navbar-item has-text-weight-bold has-text-primary" href="/login">
                     LOGIN | REGISTER
@@ -81,3 +64,25 @@
 </form>
 
 {{ end }}
+
+{{define "usercontrols"}}
+            <hr class="dropdown-divider">
+             <div class="navbar-item has-dropdown is-hoverable is-right">
+                    <a class="navbar-link has-text-weight-bold has-text-primary" href="/user/{{.ID}}">
+                        ACCOUNT
+                    </a>
+                    <div class="navbar-dropdown has-text-black is-right">
+                        <a class="navbar-item heading" href="/user/articles">
+                            Create
+                        </a>
+                        <a class="navbar-item heading" href="/articles">
+                            Read
+                        </a>
+                        <a class="navbar-item heading" href="/user/settings">
+                            Settings
+                        </a>
+                        <hr class="navbar-divider">
+                            {{ template "logout" }}
+                    </div>
+                </div>
+{{end}}

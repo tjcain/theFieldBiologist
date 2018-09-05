@@ -37,17 +37,22 @@
                         </span>
                     </p>
                 </div>
-                <div class="field">
-                    <p class="control has-icons-left">
+                <div class="field has-addons">
+                    <div class="control has-icons-left is-expanded">
                         <input class="input is-medium" 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="Your Password">
+                               id="password" 
+                               name="password" 
+                               type="password" 
+                               placeholder="Your Password">
                         <span class="icon is-small is-left">
                             <i class="fas fa-lock"></i>
                         </span>
-                    </p>
+                    </div>
+                    <div class="control">
+                        <a id="showPassword" 
+                           class="button is-medium" 
+                           onclick="toggleShowPassword()">Show</a> 
+                    </div>
                 </div>
                 <div class="field has-text-weight-light heading has-text-left">
                     <label class="checkbox">

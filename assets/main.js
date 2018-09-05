@@ -33,6 +33,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+function charcountupdate(str) {
+    var lng = str.length;
+    document.getElementById("charcount").innerHTML = lng + '/200';
+}
+
+function toggleShowPassword() {
+    var x = document.getElementById("password");
+    var y = document.getElementById("showPassword")
+    if (x.type === "password") {
+        x.type = "text";
+    } else {
+        x.type = "password";
+    }
+    if (y.textContent === "Show") {
+        y.textContent = "Hide"
+    } else {
+        y.textContent = "Show"
+    }
+}
+
 // // delete-warning-modal
 // var deleteWarningModal = document.getElementById("delete-warning-modal");
 // // open-warning-modal

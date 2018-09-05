@@ -1,8 +1,50 @@
 {{define "yield"}}
-    {{template "profileview" .Yield}}
+<section class="section">
+    <div class="column card is-10 is-offset-1">
+        {{ if eq .User.ID .Yield.ID }}
+            {{template "editprofilebutton"}}
+        {{ end }}
+        
+        {{template "profile" .Yield}}
+            
+    </div>
+</section>
+    
 {{end}}
 
-{{define "profileview"}}
-    username: {{.Name}}
-    email: {{.Email}}
+{{define "editprofilebutton"}}
+<div class="is-pulled-right">
+    <a class="button is-primary is-outlined"
+    href="/user/edit">Edit Profile</a>
+</div>
 {{end}}
+
+{{define "profile"}}
+<div class="card-content">
+    <p class="title"> {{.Name}} </p>
+    <p class="subtitle"> {{.Bio}} </p>
+</div>
+<hr>
+<div class="card-content">
+    <p class="title is-4"> Articles by {{.Name}} </p>
+    {{ range .Articles}}
+    <p class="title is-4">
+    {{.Title}}
+    </p>
+    <div class="subtitle is-6">
+    {{.SnippedHTML}}
+        <a href="/article/{{.ID}}">
+    Read
+    </a>
+    </div>
+    <br>
+    {{end}}
+</div>
+
+
+</div>
+
+{{end}}
+
+
+

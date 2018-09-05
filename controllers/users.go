@@ -2,9 +2,13 @@ package controllers
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 
 	"github.com/tjcain/theFieldBiologist/context"
 	"github.com/tjcain/theFieldBiologist/models"
@@ -31,11 +35,20 @@ type LogInForm struct {
 	RememberMe bool   `schema:"remember_me"`
 }
 
+// EditProfileForm stores data POSTed from our edit profile form
+type EditProfileForm struct {
+	Email string `schema:"email"`
+	Name  string `schema:"name"`
+	Bio   string `schema:"bio"`
+}
+
 // Users represents a new user view
 type Users struct {
 	NewView         *views.View
 	LogInView       *views.View
 	AllArticlesView *views.View
+	UserProfileView *views.View
+	ProfileView     *views.View
 	us              models.UserService
 }
 
@@ -46,6 +59,8 @@ func NewUsers(us models.UserService) *Users {
 		NewView:         views.NewView("pages", "users/signup"),
 		LogInView:       views.NewView("pages", "users/login"),
 		AllArticlesView: views.NewView("pages", "users/allarticles"),
+		UserProfileView: views.NewView("pages", "users/editprofile"),
+		ProfileView:     views.NewView("pages", "users/profileview"),
 		us:              us,
 	}
 }
@@ -61,7 +76,7 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 	var vd views.Data
 	var form SignUpForm
 	vd.Yield = &form
-	fmt.Printf("%+v\n", vd.Yield)
+	// fmt.Printf("%+v\n", vd.Yield)
 	if err := parseForm(r, &form); err != nil {
 		log.Println(err)
 		vd.SetAlert(err)
@@ -187,6 +202,70 @@ func (u *Users) ShowAllArticles(w http.ResponseWriter, r *http.Request) {
 	vd.Yield = articles
 	u.AllArticlesView.Render(w, r, vd)
 
+}
+
+// Profile returns user data and redenders a prefilled in and validated user
+// form.
+func (u *Users) Profile(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	user := context.User(r.Context())
+
+	vd.User = user
+	u.UserProfileView.Render(w, r, vd)
+	// u.us.ByID(user.id)
+
+}
+
+// EditProfile ..
+func (u *Users) EditProfile(w http.ResponseWriter, r *http.Request) {
+	var form EditProfileForm
+	user := context.User(r.Context())
+	var vd = views.Data{}
+	if err := parseForm(r, &form); err != nil {
+		log.Println(err)
+		vd.SetAlert(err)
+		// u.NewView.Render(w, r, vd)
+		return
+	}
+	user.Bio = form.Bio
+
+	err := u.us.Update(user)
+	if err != nil {
+		log.Fatal(err)
+	}
+	//TODO: redirect to profile page
+	p := fmt.Sprintf("/user/%d", user.ID)
+	http.Redirect(w, r, p, http.StatusFound)
+
+}
+
+// ShowUserProfile handles displaying public user information, it also passes
+//
+func (u *Users) ShowUserProfile(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	idStr := vars["id"]
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusNotFound)
+	}
+	user, err := u.us.ByID(uint(id))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	user.Articles, err = u.us.ArticlesByUser(user)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusNotFound)
+		log.Fatalln(err)
+	}
+	// TODO: think of a better way to do this:
+	for i := range user.Articles {
+		user.Articles[i].BodyHTML = template.HTML(user.Articles[i].Body)
+		user.Articles[i].SnippedHTML = generateSnippet(user.Articles[i].BodyHTML)
+	}
+	var vd = views.Data{}
+	vd.Yield = user
+	u.ProfileView.Render(w, r, vd)
 }
 
 // CookieTest is a temporary function for development only. It will display

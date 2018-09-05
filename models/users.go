@@ -52,6 +52,7 @@ type User struct {
 	gorm.Model
 	Name         string    `gorm:"not null"`
 	Email        string    `gorm:"not null;unique_index"`
+	Bio          string    `gorm:"type:varchar(200)"`
 	Password     string    `gorm:"-"`
 	PasswordHash string    `gorm:"not null"`
 	Remember     string    `gorm:"-"`
@@ -359,6 +360,13 @@ func (uv *userValidator) rememberHashRequired(user *User) error {
 	return nil
 }
 
+func (uv *userValidator) bioMaxLength(user *User) error {
+	if len(user.Bio) > 200 {
+		return ErrBioTooLong
+	}
+	return nil
+}
+
 // CRUD FUNCS
 
 // Create will create the provided user and backfill data
@@ -398,7 +406,8 @@ func (uv *userValidator) Update(user *User) error {
 		uv.normalizeEmail,
 		uv.requireEmail,
 		uv.emailFormat,
-		uv.emailExistsCheck)
+		uv.emailExistsCheck,
+		uv.bioMaxLength)
 	if err != nil {
 		return err
 	}

@@ -51,6 +51,7 @@ func main() {
 	csrfMw := csrf.Protect(b, csrf.Secure(cfg.IsProd()))
 
 	r := mux.NewRouter()
+
 	// Static Assets
 	assetHandler := http.FileServer(http.Dir("./assets/"))
 	assetHandler = http.StripPrefix("/assets/", assetHandler)
@@ -86,6 +87,11 @@ func main() {
 	r.Handle("/user/articles",
 		requireUserMw.ApplyFn(usersC.ShowAllArticles)).Methods("GET").
 		Name(controllers.ManageArticles)
+	r.HandleFunc("/user/edit",
+		requireUserMw.ApplyFn(usersC.Profile)).Methods("GET")
+	r.HandleFunc("/user/edit",
+		requireUserMw.ApplyFn(usersC.EditProfile)).Methods("POST")
+	r.HandleFunc("/user/{id:[0-9]+}", usersC.ShowUserProfile).Methods("GET")
 
 	// cookietest is for dev only..
 	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
