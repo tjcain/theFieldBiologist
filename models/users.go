@@ -50,6 +50,7 @@ type UserService interface {
 // User is a model of user details
 type User struct {
 	gorm.Model
+	Admin        bool
 	Name         string    `gorm:"not null"`
 	Email        string    `gorm:"not null;unique_index"`
 	Bio          string    `gorm:"type:varchar(200)"`

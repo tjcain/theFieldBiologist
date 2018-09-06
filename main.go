@@ -60,6 +60,7 @@ func main() {
 	// controllers
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
+	adminC := controllers.NewAdmin(services.User)
 	articlesC := controllers.NewArticles(services.Article, r)
 	indexC := controllers.NewIndex(services.Article, r)
 
@@ -68,6 +69,7 @@ func main() {
 		UserService: services.User,
 	}
 	requireUserMw := middleware.RequireUser{}
+	requireAdminMw := middleware.RequireAdmin{}
 
 	// newArticle := requireUserMw.Apply(articlesC.NewArticle)
 	// createArticle := requireUserMw.ApplyFn(articlesC.Create)
@@ -92,6 +94,10 @@ func main() {
 	r.HandleFunc("/user/edit",
 		requireUserMw.ApplyFn(usersC.EditProfile)).Methods("POST")
 	r.HandleFunc("/user/{id:[0-9]+}", usersC.ShowUserProfile).Methods("GET")
+
+	// admin
+	r.Handle("/admin/dashboard",
+		requireAdminMw.Apply(adminC.AdminDash)).Methods("GET")
 
 	// articles
 	r.Handle("/article/new",
