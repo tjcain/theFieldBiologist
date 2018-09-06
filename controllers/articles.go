@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -162,7 +163,8 @@ func (a *Articles) ShowLatestArticles(w http.ResponseWriter, r *http.Request) {
 	// TODO: think of a better way to do this:
 	for i, article := range articles {
 		articles[i].BodyHTML = template.HTML(article.Body)
-		articles[i].SnippedHTML = generateSnippet(articles[i].BodyHTML)
+		h := fmt.Sprintf("%v", articles[i].BodyHTML)
+		articles[i].SnippedHTML = generateSnippet(h)
 	}
 
 	var vd views.Data

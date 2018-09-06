@@ -26,6 +26,7 @@
 </div>
 <hr>
 <div class="card-content">
+{{ if .Articles }}
     <p class="title is-4"> Articles by {{.Name}} </p>
     {{ range .Articles}}
     <p class="title is-4">
@@ -39,6 +40,7 @@
     </div>
     <br>
     {{end}}
+{{end}}
 </div>
 
 

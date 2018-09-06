@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"html/template"
 	"net/http"
 	"regexp"
 	"strings"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/gorilla/schema"
 )
 
@@ -30,27 +30,15 @@ func parseForm(r *http.Request, dst interface{}) error {
 	return nil
 }
 
-// THIS WILL NEED ADJUSTING.....
-func generateSnippet(bodyHTML template.HTML) template.HTML {
-	p := reg.FindString(string(bodyHTML))
-	// fmt.Println(p)
-	words := strings.Split(p, " ")
-	switch {
-	case len(words) <= 1:
-		return template.HTML("<p class=\"has-text-grey-light\">" +
-			"Sorry, couldn't create a snippet " + "for this article we are " +
-			"working on improving this... </p>")
-	case len(words) <= lenSnippet:
-		return template.HTML("<span class=\"has-text-grey-light\">" +
-			strings.Join(words, " ") + "...")
-	case len(words) > lenSnippet:
-		return template.HTML("<span class=\"has-text-grey-light\">" +
-			strings.Join(words[:lenSnippet], " ") + "..." + "</span>")
-		// default:
-		// 	return template.HTML("<p> Sorry, couldn't create a snippet for this article " +
-		// 		"we are working on improving this... </p>")
+func generateSnippet(body string) string {
+	p := strings.NewReader(body)
+	doc, err := goquery.NewDocumentFromReader(p)
+	if err != nil {
+		return "Sorry, could not generate snippet..."
 	}
-	return template.HTML("<p class=\"has-text-grey-light\">" +
-		"Sorry, couldn't create a snippet " + "for this article we are " +
-		"working on improving this... </p>")
+	a := doc.Find("p").First().Text()
+	if len(a) < 150 {
+		return "Sorry, I need more text before I can generate a snippet..."
+	}
+	return string(a[:150]) + "..."
 }

@@ -247,21 +247,24 @@ func (u *Users) ShowUserProfile(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusNotFound)
+		return
 	}
 	user, err := u.us.ByID(uint(id))
 	if err != nil {
-		log.Fatal(err)
+		http.Error(w, "Invalid user ID", http.StatusNotFound)
+		return
 	}
 
 	user.Articles, err = u.us.ArticlesByUser(user)
 	if err != nil {
 		http.Error(w, "Invalid user ID", http.StatusNotFound)
-		log.Fatalln(err)
+		return
 	}
 	// TODO: think of a better way to do this:
 	for i := range user.Articles {
 		user.Articles[i].BodyHTML = template.HTML(user.Articles[i].Body)
-		user.Articles[i].SnippedHTML = generateSnippet(user.Articles[i].BodyHTML)
+		h := fmt.Sprintf("%v", user.Articles[i].BodyHTML)
+		user.Articles[i].SnippedHTML = generateSnippet(h)
 	}
 	var vd = views.Data{}
 	vd.Yield = user

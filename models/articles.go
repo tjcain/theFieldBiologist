@@ -24,7 +24,7 @@ type Article struct {
 	BodyHTML template.HTML `gorm:"-"`
 	// Snippet stores an N byte snippet of the text contained within the first
 	// occurance of <p> </p> tags with ... appended.
-	SnippedHTML template.HTML `gorm:"-"`
+	SnippedHTML string `gorm:"-"`
 }
 
 // ArticleService ...

@@ -47,6 +47,10 @@ a:hover {
     margin-top: 8vh;
 }
 
+.article-preview {
+    min-height: 96px;
+}
+
 .featured-article {
     height: 300px;
     background-color: black;

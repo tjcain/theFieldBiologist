@@ -185,7 +185,7 @@ func (ug *userGorm) ByRemember(rememberHash string) (*User, error) {
 // ArticlesByUser returns all articles linked to the provided user
 func (ug *userGorm) ArticlesByUser(user *User) ([]Article, error) {
 	var articles []Article
-	err := ug.db.Model(&user).Related(&articles).Error
+	err := ug.db.Order("created_at desc").Model(&user).Related(&articles).Error
 	if err != nil {
 		return nil, err
 	}
