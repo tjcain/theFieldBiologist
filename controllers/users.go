@@ -270,19 +270,3 @@ func (u *Users) ShowUserProfile(w http.ResponseWriter, r *http.Request) {
 	vd.Yield = user
 	u.ProfileView.Render(w, r, vd)
 }
-
-// CookieTest is a temporary function for development only. It will display
-// the cookies set on a current user.
-func (u *Users) CookieTest(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("remember_token")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	user, err := u.us.ByRemember(cookie.Value)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	fmt.Fprintln(w, user)
-}

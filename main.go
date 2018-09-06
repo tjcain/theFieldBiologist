@@ -93,9 +93,6 @@ func main() {
 		requireUserMw.ApplyFn(usersC.EditProfile)).Methods("POST")
 	r.HandleFunc("/user/{id:[0-9]+}", usersC.ShowUserProfile).Methods("GET")
 
-	// cookietest is for dev only..
-	r.HandleFunc("/cookietest", usersC.CookieTest).Methods("GET")
-
 	// articles
 	r.Handle("/article/new",
 		requireUserMw.Apply(articlesC.NewArticle)).Methods("GET")
