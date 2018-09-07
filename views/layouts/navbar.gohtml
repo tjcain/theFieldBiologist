@@ -39,6 +39,14 @@
             <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="/articles">
                 ARTICLES
             </a>
+            {{ if.User.Admin }}
+            <a class="navbar-item has-text-weight-bold has-text-white is-hidden-touch" href="/admin/dashboard">
+                ADMIN
+            </a>
+            <a class="navbar-item has-text-weight-bold has-text-black is-hidden-desktop" href="/admin/dashboard">
+                ADMIN
+            </a>
+            {{end}}
             {{ if .User}}
                 {{template "usercontrols" .User }}
             {{end}}
