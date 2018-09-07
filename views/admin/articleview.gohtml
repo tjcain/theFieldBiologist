@@ -1,0 +1,47 @@
+{{define "yield"}}
+    {{template "admineditform" .Yield }}
+{{end}}
+
+
+{{define "admineditform"}}
+<article class="section">
+    <div class="card">
+        <div class="card-content">
+            <p class="title">
+                {{.Title}}
+            </p>
+            <p class="subtitle">
+                By: {{.Name}}
+            </p>
+            <hr>
+            <div class="content">
+                {{.BodyHTML}}
+            </div>
+        <hr>
+        </div>
+        <div class="card-content">
+           <div class="columns">
+                <div class="column">
+                    <a href="/admin/article/{{.ID}}/accept" 
+                    class="button is-block is-medium is-success is-fullwidth"> 
+                    Publish 
+                    <a/>
+                </div>
+                <div class="column">
+                    <a href="/admin/article/{{.ID}}/reject"
+                    class="button is-block is-medium is-danger is-fullwidth"> 
+                    Reject 
+                    <a/>
+                </div>
+                <div class="column">
+                    <a href="/admin/dashboard"
+                    class="button is-block is-medium is-fullwidth"> 
+                    Cancel 
+                    <a/>
+                </div>
+           </div>
+        </div>
+    </div>
+</article>
+
+{{end}}

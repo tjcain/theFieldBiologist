@@ -26,6 +26,8 @@
                                         <i class="far fa-eye"></i>
                                     </span>
                                 </a>
+                            {{ if not .Submitted}}
+                                {{ if not .Published }}
                                 <a href="/article/{{.ID}}/edit" class="button is-info is-outlined">
                                     <span class="icon">
                                         <i class="far fa-edit"></i>
@@ -39,26 +41,44 @@
                                         </span>
                                     </button>
                                 </form>
+                                {{end}}
+                            {{end}}
                         </div>
                     </div>
 
                 </div>
                 <footer class="card-footer">
                     <p class="card-footer-item">
-                        <span>
-                            Views: COMMING SOON
-                        </span>
+                            Status:&nbsp;
+                            {{ if .Published}}
+                                <span class="has-text-success"> Published</span>
+                            {{ else if .Rejected }}
+                                <span class="has-text-danger"> Rejected</span>
+                            {{ else if .Submitted }}
+                                <span class="has-text-warning"> Submitted for review</span>
+                            {{ else }}
+                                <span class="has-text-light-grey"> Draft</span>
+                            {{ end }}
                     </p>
                     <p class="card-footer-item">
                         <span>
-                            Favorites: COMMING SOON
-                        </span>
-                    </p>
-                    <p class="card-footer-item">
-                        <span>
-                            <a href="" disabled class="button is-link is-outlined">
-                                Publish
+                        {{if .Submitted}}
+                            <a href="/article/{{.ID}}/withdraw" class="button is-link is-outlined">
+                                Withdraw Article
                             </a>
+                        {{else if .Published}}
+                            <a disabled class="button is-success is-outlined">
+                                Congratulations!
+                            </a>
+                        {{else if .Rejected}}
+                            <a href="/article/{{.ID}}/submit" class="button is-link is-outlined">
+                                Resubmit for Review
+                            </a>
+                        {{else}}
+                            <a href="/article/{{.ID}}/submit" class="button is-link is-outlined">
+                                Submit For Review
+                            </a>
+                        {{end}}
                         </span>
                     </p>
                 </footer>

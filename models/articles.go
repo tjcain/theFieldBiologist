@@ -50,6 +50,7 @@ type ArticleDB interface {
 	Update(article *Article) error
 	Delete(id uint) error
 	LatestArticles(limit int) ([]Article, error)
+	ArticlesForReview() ([]Article, error)
 
 	// Article Stat Counts
 	DraftArticles() (uint, error)
@@ -172,8 +173,8 @@ func (ag *articleGorm) ByUserID(userID uint) ([]Article, error) {
 
 func (ag *articleGorm) GetAll() ([]Article, error) {
 	var articles []Article
-	db := ag.db.Table("articles").Select("articles.*, users.name").
-		Joins("join users on articles.user_id = users.id")
+	db := ag.db.Where("published = ?", true).Table("articles").
+		Select("articles.*, users.name").Joins("join users on articles.user_id = users.id")
 	if err := db.Order("created_at desc").Find(&articles).Error; err != nil {
 		return nil, err
 	}
@@ -182,12 +183,25 @@ func (ag *articleGorm) GetAll() ([]Article, error) {
 
 func (ag *articleGorm) LatestArticles(limit int) ([]Article, error) {
 	var articles []Article
-	db := ag.db.Table("articles").Select("articles.*, users.name").
-		Joins("join users on articles.user_id = users.id")
+	db := ag.db.Where("published = ?", true).Table("articles").
+		Select("articles.*, users.name").Joins("join users on articles.user_id = users.id")
 	if err := db.Limit(limit).Order("created_at desc").Find(&articles).Error; err != nil {
 		return nil, err
 	}
 	return articles, nil
+}
+
+func (ag *articleGorm) ArticlesForReview() ([]Article, error) {
+	var articles []Article
+	db := ag.db.Table("articles").Select("articles.*, users.name").
+		Joins("join users on articles.user_id = users.id")
+	if err := db.Order("created_at desc").Where("submitted = ? AND published = ?",
+		true, false).
+		Find(&articles).Error; err != nil {
+		return nil, err
+	}
+	return articles, nil
+
 }
 
 // Create ...
@@ -208,7 +222,8 @@ func (ag *articleGorm) Delete(id uint) error {
 
 func (ag *articleGorm) DraftArticles() (uint, error) {
 	var count uint
-	err := ag.db.Table("articles").Count(&count).Error
+	err := ag.db.Table("articles").Not("published = ?", true).Count(&count).
+		Error
 	if err != nil {
 		return 0, err
 	}

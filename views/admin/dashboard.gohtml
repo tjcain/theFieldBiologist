@@ -49,7 +49,7 @@
                             {{.PublishedArticles}}
                         </p>
                         <p class="subtitle">
-                            Published Articles
+                            Published
                         </p>
                     </div>
                 </div>
@@ -57,40 +57,30 @@
         </div>
 
         <div class="columns">
-            <div class="column">
+            <div class="column is-6">
                 <div class="card">
                     <div class="card-content">
                         <p class="title is-4">
                             Articles for review
                         </p>
                         <hr>
+                        {{ range .Articles }}
                         <div class="columns">
                             <div class="column is-three-quarters">
                                 <p class="title is-5">
-                                    This is a very long title of article very long article
+                                    {{.Title}}
                                 </p>
                             </div>
                             <div class="column auto">
-                                <a href="/article/..." class="button is-primary is-outlined">
+                                <a href="/admin/article/{{.ID}}/view" class="button is-primary is-outlined">
                                     <span class="icon">
                                         <i class="far fa-eye"></i>
                                     </span>
+                                    <span>Review</span>
                                 </a>
-                                <a href="/article/.../edit" class="button is-info is-outlined">
-                                    <span class="icon">
-                                        <i class="far fa-edit"></i>
-                                    </span>
-                                </a>
-                                <form class="is-marginless is-paddingless is-inline" action="/article/.../delete" method="POST">
-                                    {{csrfField}}
-                                    <button action="submit" class="button is-danger is-outlined">
-                                        <span class="icon">
-                                            <i class="far fa-trash-alt"></i>
-                                        </span>
-                                    </button>
-                                </form>
                             </div>
                         </div>
+                {{end}}
                     </div>
                 </div>
             </div>

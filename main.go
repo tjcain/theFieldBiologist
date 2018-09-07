@@ -94,6 +94,12 @@ func main() {
 	// admin
 	r.Handle("/admin/dashboard",
 		requireAdminMw.ApplyFn(adminC.Dashboard)).Methods("GET")
+	r.Handle("/admin/article/{id:[0-9]+}/view",
+		requireAdminMw.ApplyFn(adminC.ArticleView)).Methods("GET")
+	r.Handle("/admin/article/{id:[0-9]+}/accept",
+		requireAdminMw.ApplyFn(adminC.Accept)).Methods("GET")
+	r.Handle("/admin/article/{id:[0-9]+}/reject",
+		requireAdminMw.ApplyFn(adminC.Reject)).Methods("GET")
 
 	// articles
 	r.Handle("/article/new",
@@ -110,6 +116,10 @@ func main() {
 		requireUserMw.ApplyFn(articlesC.Update)).Methods("POST")
 	r.HandleFunc("/article/{id:[0-9]+}/delete",
 		requireUserMw.ApplyFn(articlesC.Delete)).Methods("POST")
+	r.HandleFunc("/article/{id:[0-9]+}/submit",
+		requireUserMw.ApplyFn(articlesC.Submit)).Methods("GET")
+	r.HandleFunc("/article/{id:[0-9]+}/withdraw",
+		requireUserMw.ApplyFn(articlesC.Withdraw)).Methods("GET")
 
 	// startup
 	fmt.Printf("Listening on localhost:%d\n", cfg.Port)

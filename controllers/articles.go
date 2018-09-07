@@ -139,6 +139,44 @@ func (a *Articles) Delete(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// Submit GET /articles/:id/submit
+func (a *Articles) Submit(w http.ResponseWriter, r *http.Request) {
+	article, err := a.ArticleByID(w, r)
+	if err != nil {
+		// error is already rendered by ArticleByID
+		return
+	}
+	article.Submitted = true
+	var vd views.Data
+	err = a.as.Update(article)
+	if err != nil {
+		vd.SetAlert(err)
+		vd.Yield = article
+		a.EditArticle.Render(w, r, vd)
+		return
+	}
+	http.Redirect(w, r, "/user/articles", http.StatusFound)
+}
+
+// Withdraw GET /articles/:id/withdraw
+func (a *Articles) Withdraw(w http.ResponseWriter, r *http.Request) {
+	article, err := a.ArticleByID(w, r)
+	if err != nil {
+		// error is already rendered by ArticleByID
+		return
+	}
+	article.Submitted = false
+	var vd views.Data
+	err = a.as.Update(article)
+	if err != nil {
+		vd.SetAlert(err)
+		vd.Yield = article
+		a.EditArticle.Render(w, r, vd)
+		return
+	}
+	http.Redirect(w, r, "/user/articles", http.StatusFound)
+}
+
 // Show GET /articles/:id
 func (a *Articles) Show(w http.ResponseWriter, r *http.Request) {
 	article, err := a.ArticleByID(w, r)
@@ -191,7 +229,6 @@ func (a *Articles) Edit(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// TODO: FIX THIS... SHOULD NOT BE MOVED TO MODELS
 // ArticleByID retrieves an article by it's given id taken from the request
 func (a *Articles) ArticleByID(w http.ResponseWriter,
 	r *http.Request) (*models.Article, error) {
