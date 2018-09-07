@@ -22,6 +22,9 @@ const (
 	// ErrEmailTaken is returned when an update or create call is attempted
 	// on an email address that is already in the database.
 	ErrEmailTaken modelError = "models: email address is already taken"
+	// ErrNameTaken is returned when an update or create call is attempted
+	// on an email address that is already in the database.
+	ErrNameTaken modelError = "models: name is already taken, sorry"
 	// ErrPasswordTooShort is returned with a user attempts to set a password
 	// that is less than 8 characters
 	ErrPasswordTooShort modelError = "models: password must be at least 8" +
