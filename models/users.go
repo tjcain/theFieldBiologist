@@ -32,6 +32,9 @@ type UserDB interface {
 
 	// Methods for getting users articles
 	ArticlesByUser(user *User) ([]Article, error)
+
+	// Methods for returning counts
+	UsersCount() (uint, error)
 }
 
 // UserService is a set of methods used to manipulate and
@@ -192,6 +195,20 @@ func (ug *userGorm) ArticlesByUser(user *User) ([]Article, error) {
 	}
 	return articles, nil
 }
+
+// UsersCount
+func (ug *userGorm) UsersCount() (uint, error) {
+	var count uint
+	err := ug.db.Table("users").Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+// ArticlesCount
+
+// PublishedArticlesCount
 
 type userValFunc func(*User) error
 

@@ -36,10 +36,6 @@ func main() {
 		models.WithArticle(),
 	)
 
-	// services, err := models.NewServices(dbCfg.Dialect(), dbCfg.connectionInfo())
-	// if err != nil {
-	// 	panic(err)
-	// }
 	defer services.Close()
 	services.AutoMigrate()
 
@@ -60,7 +56,7 @@ func main() {
 	// controllers
 	staticC := controllers.NewStatic()
 	usersC := controllers.NewUsers(services.User)
-	adminC := controllers.NewAdmin(services.User)
+	adminC := controllers.NewAdmin(services.User, services.Article)
 	articlesC := controllers.NewArticles(services.Article, r)
 	indexC := controllers.NewIndex(services.Article, r)
 
@@ -97,7 +93,7 @@ func main() {
 
 	// admin
 	r.Handle("/admin/dashboard",
-		requireAdminMw.Apply(adminC.AdminDash)).Methods("GET")
+		requireAdminMw.ApplyFn(adminC.Dashboard)).Methods("GET")
 
 	// articles
 	r.Handle("/article/new",

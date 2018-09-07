@@ -19,6 +19,15 @@ type Article struct {
 	// back to the webpage in a '.contents' div it needs to be cast to
 	// template.HTML
 	Body []byte
+	// Submitted contains the bool which is set true when an article has been
+	// submitted for editorial review
+	Submitted bool
+	// Published contains the bool which states if an article has been reviewed
+	// and accepted by an editor.
+	Published bool
+	// Rejected contains the bool whcih states if an article has been reviewed
+	// and rejected by an editor.
+	Rejected bool
 	// BodyHTML stores template.HTML type, which removes HTML escape characters,
 	// it is needed to render the output from the WYSIWYG editor.
 	BodyHTML template.HTML `gorm:"-"`
@@ -41,6 +50,11 @@ type ArticleDB interface {
 	Update(article *Article) error
 	Delete(id uint) error
 	LatestArticles(limit int) ([]Article, error)
+
+	// Article Stat Counts
+	DraftArticles() (uint, error)
+	PublishedArticles() (uint, error)
+	ReviewQueue() (uint, error)
 }
 
 type articleService struct {
@@ -190,4 +204,33 @@ func (ag *articleGorm) Update(article *Article) error {
 func (ag *articleGorm) Delete(id uint) error {
 	article := Article{Model: gorm.Model{ID: id}}
 	return ag.db.Delete(&article).Error
+}
+
+func (ag *articleGorm) DraftArticles() (uint, error) {
+	var count uint
+	err := ag.db.Table("articles").Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (ag *articleGorm) PublishedArticles() (uint, error) {
+	var count uint
+	err := ag.db.Where("published = ?", true).Table("articles").
+		Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
+}
+
+func (ag *articleGorm) ReviewQueue() (uint, error) {
+	var count uint
+	err := ag.db.Where("submitted = ? AND published = ? ", true, false).
+		Table("articles").Count(&count).Error
+	if err != nil {
+		return 0, err
+	}
+	return count, nil
 }

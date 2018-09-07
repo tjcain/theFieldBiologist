@@ -1,3 +1,98 @@
 {{define "yield" }}
-    <h1> ADMIN DASHBOARD.. CAN ONLY BE SEEN BY ADMINS! </h1>
+    {{template "admindash" .Yield}}
+{{end}}
+
+
+{{define "admindash"}}
+    <section class="section">
+        <div class="columns">
+            <div class="column">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <p class="title">
+                            {{.Users}}
+                        </p>
+                        <p class="subtitle">
+                            Users
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <p class="title">
+                            {{.DraftArticles}}
+                        </p>
+                        <p class="subtitle">
+                            Draft Articles
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <p class="title">
+                            {{.ReviewQueue}}
+                        </p>
+                        <p class="subtitle">
+                            Review Queue
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="column">
+                <div class="card">
+                    <div class="card-content has-text-centered">
+                        <p class="title">
+                            {{.PublishedArticles}}
+                        </p>
+                        <p class="subtitle">
+                            Published Articles
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="columns">
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">
+                            Articles for review
+                        </p>
+                        <hr>
+                        <div class="columns">
+                            <div class="column is-three-quarters">
+                                <p class="title is-5">
+                                    This is a very long title of article very long article
+                                </p>
+                            </div>
+                            <div class="column auto">
+                                <a href="/article/..." class="button is-primary is-outlined">
+                                    <span class="icon">
+                                        <i class="far fa-eye"></i>
+                                    </span>
+                                </a>
+                                <a href="/article/.../edit" class="button is-info is-outlined">
+                                    <span class="icon">
+                                        <i class="far fa-edit"></i>
+                                    </span>
+                                </a>
+                                <form class="is-marginless is-paddingless is-inline" action="/article/.../delete" method="POST">
+                                    {{csrfField}}
+                                    <button action="submit" class="button is-danger is-outlined">
+                                        <span class="icon">
+                                            <i class="far fa-trash-alt"></i>
+                                        </span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
 {{end}}
