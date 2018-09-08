@@ -48,7 +48,7 @@ It appears that you have requested a password reset. If this was you, please fol
 <br/>
 <a href="%s">%s</a><br/>
 <br/>
-If you are asked for a token, please use the following value:<br/>
+If you are asked for a token, please use the following:<br/>
 <br/>
 %s<br/>
 <br/>
