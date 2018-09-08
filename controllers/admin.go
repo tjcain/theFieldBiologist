@@ -27,6 +27,7 @@ type AdminInfo struct {
 	ReviewQueue       uint
 	PublishedArticles uint
 	Articles          []models.Article
+	UserList          []models.User
 }
 
 // NewAdmin is used to create a new Admin controller.
@@ -68,11 +69,17 @@ func (a *Admin) Dashboard(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	Userlist, err := a.us.UserList()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 	info.Users = userCount
 	info.DraftArticles = DraftArticles
 	info.ReviewQueue = ReviewQueue
 	info.PublishedArticles = PublishedArticles
 	info.Articles = ArticlesForReview
+	info.UserList = Userlist
 	var vd views.Data
 	vd.Yield = info
 	a.AdminDashView.Render(w, r, vd)

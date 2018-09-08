@@ -57,7 +57,7 @@
         </div>
 
         <div class="columns">
-            <div class="column is-6">
+            <div class="column">
                 <div class="card">
                     <div class="card-content">
                         <p class="title is-4">
@@ -80,9 +80,51 @@
                                 </a>
                             </div>
                         </div>
-                {{end}}
+                        {{end}}
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <div class="card">
+                    <div class="card-content">
+                        <p class="title is-4">
+                            Manage Users
+                        </p>
+                        <hr>
+                        {{ range .UserList }}
+                        <div class="columns">
+                            <div class="column">
+                                <p class="">
+                                    {{.Name}}
+                                </p>
+                            </div>
+                            <div class="column">
+                                <p class="">
+                                    {{.Email}}
+                                </p>
+                            </div>
+                            <div class="column has-text-centered">
+                            {{if .Admin}}
+                                <p class="has-text-danger">
+                                    Admin
+                                </p>
+                            {{end}}
+                            </div>
+                            <div class="column has-text-centered">
+                                <a href="/admin/article/{{.ID}}/view" class="button is-primary is-outlined">
+                                    <span class="icon">
+                                        <i class="far fa-eye"></i>
+                                    </span>
+                                    <span>Review</span>
+                                </a>
+                            </div>
+                        </div>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 {{end}}
