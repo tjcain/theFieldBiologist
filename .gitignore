@@ -1,7 +1,7 @@
 # Binaries for programs and plugins
 *.exe
 *.exe~
-*.dll
+*.dll  
 *.so
 *.dylib
 
@@ -19,6 +19,10 @@ assets/images/*
 
 # top secret config
 .config
+
+# deploy script
+scripts/
+
 
 # experimental
 exp/  
