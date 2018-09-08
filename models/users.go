@@ -65,16 +65,18 @@ type UserService interface {
 // User is a model of user details
 type User struct {
 	gorm.Model
-	Admin        bool
-	Name         string    `gorm:"not null;unique_index"`
-	Email        string    `gorm:"not null;unique_index"`
-	Bio          string    `gorm:"type:varchar(200)"`
-	Password     string    `gorm:"-"`
-	PasswordHash string    `gorm:"not null"`
-	Remember     string    `gorm:"-"`
-	RememberHash string    `gorm:"not null;unique_index"`
-	RememberMe   bool      `gorm:"-"`
-	Articles     []Article `gorm:"foreignkey:UserID"`
+	Admin           bool
+	Name            string `gorm:"not null;unique_index"`
+	Email           string `gorm:"not null;unique_index"`
+	EmailPermission bool
+	TandC           bool
+	Bio             string    `gorm:"type:varchar(200)"`
+	Password        string    `gorm:"-"`
+	PasswordHash    string    `gorm:"not null"`
+	Remember        string    `gorm:"-"`
+	RememberHash    string    `gorm:"not null;unique_index"`
+	RememberMe      bool      `gorm:"-"`
+	Articles        []Article `gorm:"foreignkey:UserID"`
 }
 
 // TODO: Delete before deployment
@@ -480,12 +482,20 @@ func (uv *userValidator) bioMaxLength(user *User) error {
 	return nil
 }
 
+func (uv *userValidator) tAndCRequired(user *User) error {
+	if !user.TandC {
+		return ErrTandCRequired
+	}
+	return nil
+}
+
 // CRUD FUNCS
 
 // Create will create the provided user and backfill data
 // like the ID, CreatedAt, and UpdatedAt fields.
 func (uv *userValidator) Create(user *User) error {
 	err := runUserValFns(user,
+		uv.tAndCRequired,
 		uv.requireName,
 		uv.passwordRequired,
 		uv.passwordMinLength,

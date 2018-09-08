@@ -8,6 +8,7 @@ import (
 type Static struct {
 	AboutView   *views.View
 	ContactView *views.View
+	PrivacyView *views.View
 	// TODO: Rest of semi static pages:
 	// News
 }
@@ -17,5 +18,6 @@ func NewStatic() *Static {
 	return &Static{
 		AboutView:   views.NewView("pages", "static/about"),
 		ContactView: views.NewView("pages", "static/contact"),
+		PrivacyView: views.NewView("pages", "static/privacy"),
 	}
 }

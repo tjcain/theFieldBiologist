@@ -83,6 +83,7 @@ func main() {
 	r.HandleFunc("/", indexC.Index).Methods("GET")
 	r.Handle("/about", staticC.AboutView).Methods("GET")
 	r.Handle("/contact", staticC.ContactView).Methods("GET")
+	r.Handle("/privacy", staticC.PrivacyView).Methods("GET")
 
 	// users
 	r.HandleFunc("/signup", usersC.New).Methods("GET")

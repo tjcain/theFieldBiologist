@@ -24,9 +24,11 @@ const (
 
 // SignUpForm stores data POSTed from our signup form
 type SignUpForm struct {
-	Name     string `schema:"name"`
-	Email    string `schema:"email"`
-	Password string `schema:"password"`
+	Name      string `schema:"name"`
+	Email     string `schema:"email"`
+	Password  string `schema:"password"`
+	TandC     bool   `schema:"tandc"`
+	EmailPerm bool   `schema:"emailpermission"`
 }
 
 // LogInForm stores data POSTed from our login form
@@ -98,9 +100,11 @@ func (u *Users) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	user := models.User{
-		Name:     form.Name,
-		Email:    form.Email,
-		Password: form.Password,
+		Name:            form.Name,
+		Email:           form.Email,
+		Password:        form.Password,
+		TandC:           form.TandC,
+		EmailPermission: form.EmailPerm,
 	}
 	if err := u.us.Create(&user); err != nil {
 		vd.SetAlert(err)

@@ -40,6 +40,9 @@ const (
 	ErrBioTooLong modelError = "models: bio cannot be over 200 characters"
 	// ErrTokenInvalid is returned when a password reset token is invalid
 	ErrTokenInvalid modelError = "models: token provided is not valid"
+	// ErrTandCRequired if the terms and conditions checkbox is not checked when
+	// signing up
+	ErrTandCRequired modelError = "models: terms and conditions must be accepted"
 
 	//PRIVATE ERRORS - not displayed to end user
 

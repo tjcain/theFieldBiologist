@@ -94,16 +94,23 @@
                         </p>
                         <hr>
                         {{ range .UserList }}
-                        <div class="columns">
-                            <div class="column">
+                        <div class="columns has-text-centered">
+                        <div class="column">
+                                <p class="">
+                                    {{.ID}}
+                                </p>
+                            </div>
+                            <div class="column has-text-centered">
                                 <p class="">
                                     {{.Name}}
                                 </p>
                             </div>
-                            <div class="column">
+                            <div class="column has-text-centered">
+                            {{ if .EmailPermission }}
                                 <p class="">
                                     {{.Email}}
                                 </p>
+                            {{ end }}
                             </div>
                             <div class="column has-text-centered">
                             {{if .Admin}}
@@ -113,11 +120,10 @@
                             {{end}}
                             </div>
                             <div class="column has-text-centered">
-                                <a href="/admin/article/{{.ID}}/view" class="button is-primary is-outlined">
+                                <a href="/user/{{.ID}}" class="button is-primary is-outlined">
                                     <span class="icon">
                                         <i class="far fa-eye"></i>
                                     </span>
-                                    <span>Review</span>
                                 </a>
                             </div>
                         </div>
