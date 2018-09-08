@@ -35,10 +35,11 @@ const (
 	// ErrTitleRequired is returned when an attempt to create an asset is made
 	// without a title
 	ErrTitleRequired modelError = "models: title is required"
-
 	// ErrBioTooLong is returned when a bio is submitted that exceeds the allowed
 	// 200 characters
 	ErrBioTooLong modelError = "models: bio cannot be over 200 characters"
+	// ErrTokenInvalid is returned when a password reset token is invalid
+	ErrTokenInvalid modelError = "models: token provided is not valid"
 
 	//PRIVATE ERRORS - not displayed to end user
 

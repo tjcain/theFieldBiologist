@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -17,6 +18,22 @@ var (
 	// reg is the regexp to match the first paragraph of an article
 	reg = regexp.MustCompile(`<p.*?>(.*?)</p>`)
 )
+
+func parseURLParams(r *http.Request, dst interface{}) error {
+	if err := r.ParseForm(); err != nil {
+		return err
+	}
+	return parseValues(r.Form, dst)
+}
+
+func parseValues(values url.Values, dst interface{}) error {
+	dec := schema.NewDecoder()
+	dec.IgnoreUnknownKeys(true)
+	if err := dec.Decode(dst, values); err != nil {
+		return err
+	}
+	return nil
+}
 
 func parseForm(r *http.Request, dst interface{}) error {
 	if err := r.ParseForm(); err != nil {

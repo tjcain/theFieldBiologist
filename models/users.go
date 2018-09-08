@@ -3,6 +3,7 @@ package models
 import (
 	"regexp"
 	"strings"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -41,6 +42,7 @@ type UserDB interface {
 // UserService is a set of methods used to manipulate and
 // work with the user model
 type UserService interface {
+	UserDB
 	// Authenticate will verify the provided email address and
 	// password are correct. If they are correct, the user
 	// corresponding to that email will be returned. Otherwise
@@ -48,7 +50,15 @@ type UserService interface {
 	// ErrNotFound, ErrPasswordInvalid, or another error if
 	// something goes wrong.
 	Authenticate(email, password string) (*User, error)
-	UserDB
+	// InitiateReset will complete all the model-related tasks
+	// to start the password reset process for the user with
+	// a given email address. On completion it will return
+	// the token, or an error if there was one.
+	InitiateReset(email string) (string, error)
+	// CompleteReset will finalise all the model-related tasks
+	// to complete the password reset processes. If the token has expired,
+	// or become invalid the ErrTokenInvalid error will be returned.
+	CompleteReset(token, newPw string) (*User, error)
 }
 
 // User is a model of user details
@@ -73,7 +83,8 @@ var _ UserService = &userService{}
 // querying, creating and updating users.
 type userService struct {
 	UserDB
-	pepper string
+	pepper    string
+	pwResetDB pwResetDB
 }
 
 // NewUserService instantiates a UserService with a connection to postgres db
@@ -82,8 +93,9 @@ func NewUserService(db *gorm.DB, pepper, hmacKey string) UserService {
 	hmac := hash.NewHMAC(hmacKey)
 	uv := newUserValidator(ug, hmac, pepper)
 	return &userService{
-		UserDB: uv,
-		pepper: pepper,
+		UserDB:    uv,
+		pepper:    pepper,
+		pwResetDB: newPwResetValidator(&pwResetGorm{db}, hmac),
 	}
 }
 
@@ -111,7 +123,45 @@ func (us *userService) Authenticate(email, password string) (*User, error) {
 	}
 }
 
-// TODO: Delete me before deployment
+func (us *userService) InitiateReset(email string) (string, error) {
+	user, err := us.ByEmail(email)
+	if err != nil {
+		return "", err
+	}
+	pwr := pwReset{
+		UserID: user.ID,
+	}
+	if err := us.pwResetDB.Create(&pwr); err != nil {
+		return "", err
+	}
+	return pwr.Token, nil
+}
+
+func (us *userService) CompleteReset(token,
+	newPw string) (*User, error) {
+	pwr, err := us.pwResetDB.ByToken(token)
+	if err != nil {
+		if err == ErrNotFound {
+			return nil, ErrTokenInvalid
+		}
+		return nil, err
+	}
+	if time.Now().Sub(pwr.CreatedAt) > (12 * time.Hour) {
+		return nil, ErrTokenInvalid
+	}
+	user, err := us.ByID(pwr.UserID)
+	if err != nil {
+		return nil, err
+	}
+	user.Password = newPw
+	err = us.Update(user)
+	if err != nil {
+		return nil, err
+	}
+	us.pwResetDB.Delete(pwr.ID)
+	return user, nil
+}
+
 var _ UserDB = &userGorm{}
 
 // userGorm represents the database interaction layer and impliments the UserDB

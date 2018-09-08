@@ -1,0 +1,55 @@
+{{define "yield"}}
+<section class="section has-text-centered">
+        <div class="column content is-4 is-offset-4 has-text-grey-light">
+            <h1 class="has-text-grey-dark">Reset Your Password</h1>
+        </div>
+        {{template "resetPwForm" . }}
+        <div class=" column content heading is-4 is-offset-4">
+           <!-- <a class="has-text-grey has-text-weight-bold" href="/signup">Sign Up</a> -->
+            <a class="has-text-grey has-text-weight-bold" href="/forgot">
+            Need to reset again?
+            </a>
+        </div>
+    </section>
+{{end}}
+
+{{define "resetPwForm"}}
+<form action="/login" method="POST">
+        {{csrfField}}
+            <div class=" column card is-6 is-offset-3">
+                <div class="field">
+                    <p class="control has-icons-left has-icons-right">
+                        <input class="input is-medium" 
+                               type="text" 
+                               id="token" 
+                               name="token" 
+                               placeholder="The Token Emailed to you"
+                               value="{{.Token}}"> 
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-coins"></i>
+                        </span>
+                    </p>
+                </div>
+                <div class="field has-addons">
+                    <div class="control has-icons-left is-expanded">
+                        <input class="input is-medium" 
+                               id="password" 
+                               name="password" 
+                               type="password" 
+                               placeholder="New Password">
+                        <span class="icon is-small is-left">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                    </div>
+                    <div class="control">
+                        <a id="showPassword" 
+                           class="button is-medium" 
+                           onclick="toggleShowPassword()">Show</a> 
+                    </div>
+                </div>
+                <button class="button is-block is-medium is-primary is-fullwidth">
+                Reset
+                </button>
+            </div>
+        </form>
+{{end}}

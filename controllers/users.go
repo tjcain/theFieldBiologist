@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 
 	"github.com/tjcain/theFieldBiologist/context"
+	"github.com/tjcain/theFieldBiologist/email"
 	"github.com/tjcain/theFieldBiologist/models"
 	"github.com/tjcain/theFieldBiologist/rand"
 	"github.com/tjcain/theFieldBiologist/views"
@@ -42,6 +43,13 @@ type EditProfileForm struct {
 	Bio   string `schema:"bio"`
 }
 
+// ResetPwForm stores data POSTed during the reset password process
+type ResetPwForm struct {
+	Email    string `schema:"email"`
+	Token    string `schema:"token"`
+	Password string `schema:"password"`
+}
+
 // Users represents a new user view
 type Users struct {
 	NewView         *views.View
@@ -49,19 +57,25 @@ type Users struct {
 	AllArticlesView *views.View
 	UserProfileView *views.View
 	ProfileView     *views.View
+	ForgotPwView    *views.View
+	ResetPwView     *views.View
 	us              models.UserService
+	emailer         *email.Client
 }
 
 // NewUsers is used to create a new Users controller.
 // Any error in rendering templates will cause this function to panic.
-func NewUsers(us models.UserService) *Users {
+func NewUsers(us models.UserService, emailer *email.Client) *Users {
 	return &Users{
 		NewView:         views.NewView("pages", "users/signup"),
 		LogInView:       views.NewView("pages", "users/login"),
 		AllArticlesView: views.NewView("pages", "users/allarticles"),
 		UserProfileView: views.NewView("pages", "users/editprofile"),
 		ProfileView:     views.NewView("pages", "users/profileview"),
+		ForgotPwView:    views.NewView("pages", "users/forgot_pw"),
+		ResetPwView:     views.NewView("pages", "users/reset_pw"),
 		us:              us,
+		emailer:         emailer,
 	}
 }
 
@@ -177,6 +191,73 @@ func (u *Users) LogOut(w http.ResponseWriter, r *http.Request) {
 	user.Remember = token
 	u.us.Update(user)
 	http.Redirect(w, r, "/", http.StatusFound)
+}
+
+// InitiateReset POST /forgot
+func (u *Users) InitiateReset(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	var form ResetPwForm
+	vd.Yield = &form
+	if err := parseForm(r, &form); err != nil {
+		vd.SetAlert(err)
+		u.ForgotPwView.Render(w, r, vd)
+		return
+	}
+
+	token, err := u.us.InitiateReset(form.Email)
+	if err != nil {
+		vd.SetAlert(err)
+		u.ForgotPwView.Render(w, r, vd)
+		return
+	}
+
+	err = u.emailer.ResetPw(form.Email, token)
+	if err != nil {
+		vd.SetAlert(err)
+		u.ForgotPwView.Render(w, r, vd)
+		return
+	}
+
+	views.RedirectAlert(w, r, "/reset", http.StatusFound, views.Alert{
+		Level:   views.AlertLvlSuccess,
+		Message: "Instructions for resetting your password have been emailed to you.",
+	})
+
+}
+
+// ResetPW GET /reset
+// Displays the result of the reset password form, has a method to prefill
+// data.
+func (u *Users) ResetPw(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	var form ResetPwForm
+	vd.Yield = &form
+	if err := parseURLParams(r, &form); err != nil {
+		vd.SetAlert(err)
+	}
+	u.ResetPwView.Render(w, r, vd)
+}
+
+// CompleteReset POST /reset
+func (u *Users) CompleteReset(w http.ResponseWriter, r *http.Request) {
+	var vd views.Data
+	var form ResetPwForm
+	vd.Yield = &form
+	if err := parseForm(r, &form); err != nil {
+		vd.SetAlert(err)
+		u.ResetPwView.Render(w, r, vd)
+		return
+	}
+
+	user, err := u.us.CompleteReset(form.Token, form.Password)
+	if err != nil {
+		vd.SetAlert(err)
+		u.ResetPwView.Render(w, r, vd)
+		return
+	}
+
+	u.signIn(w, user)
+	//TODO: REDIRECT
 }
 
 // ShowAllArticles lists all the articles belonging to a given author, this is

@@ -42,7 +42,8 @@ func NewServices(cfgs ...ServicesConfig) (*Services, error) {
 
 // DestructiveReset drops the user table and rebuilts it
 func (s *Services) DestructiveReset() error {
-	if err := s.db.DropTableIfExists(&User{}, Article{}).Error; err != nil {
+	if err := s.db.DropTableIfExists(&User{}, &Article{}, &pwReset{}).
+		Error; err != nil {
 		return err
 	}
 	return s.AutoMigrate()
@@ -50,7 +51,8 @@ func (s *Services) DestructiveReset() error {
 
 // AutoMigrate will attempt to automatically migrate the users and article table
 func (s *Services) AutoMigrate() error {
-	if err := s.db.AutoMigrate(&User{}, Article{}).Error; err != nil {
+	if err := s.db.AutoMigrate(&User{}, &Article{}, &pwReset{}).
+		Error; err != nil {
 		return err
 	}
 	return nil

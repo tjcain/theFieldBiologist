@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/tjcain/theFieldBiologist/controllers"
 	"github.com/tjcain/theFieldBiologist/devhelpers"
+	"github.com/tjcain/theFieldBiologist/email"
 	"github.com/tjcain/theFieldBiologist/middleware"
 	"github.com/tjcain/theFieldBiologist/models"
 	"github.com/tjcain/theFieldBiologist/rand"
@@ -39,6 +40,13 @@ func main() {
 	defer services.Close()
 	services.AutoMigrate()
 
+	mgCfg := cfg.Mailgun
+	emailer := email.NewClient(
+		email.WithSender("thefieldbiologist.com Support",
+			"support@support.thefieldbiologist.com"),
+		email.WithMailgun(mgCfg.Domain, mgCfg.APIKey, mgCfg.PublicAPIKey),
+	)
+
 	// Cross-Site Request Forgery Protection
 	b, err := rand.Bytes(32)
 	if err != nil {
@@ -55,7 +63,7 @@ func main() {
 
 	// controllers
 	staticC := controllers.NewStatic()
-	usersC := controllers.NewUsers(services.User)
+	usersC := controllers.NewUsers(services.User, emailer)
 	adminC := controllers.NewAdmin(services.User, services.Article)
 	articlesC := controllers.NewArticles(services.Article, r)
 	indexC := controllers.NewIndex(services.Article, r)
@@ -90,6 +98,10 @@ func main() {
 	r.HandleFunc("/user/edit",
 		requireUserMw.ApplyFn(usersC.EditProfile)).Methods("POST")
 	r.HandleFunc("/user/{id:[0-9]+}", usersC.ShowUserProfile).Methods("GET")
+	r.Handle("/forgot", usersC.ForgotPwView).Methods("GET")
+	r.HandleFunc("/forgot", usersC.InitiateReset).Methods("POST")
+	r.HandleFunc("/reset", usersC.ResetPw).Methods("GET")
+	r.HandleFunc("/reset", usersC.CompleteReset).Methods("POST")
 
 	// admin
 	r.Handle("/admin/dashboard",
