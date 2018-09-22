@@ -2,4 +2,4 @@
 
 Repository for https://thefieldbiologist.com
 
-Not deployed yet.
+Test version deployed... feedback welcome.
